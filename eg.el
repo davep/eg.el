@@ -83,7 +83,7 @@ Any trailing NUL characters are removed."
                  collect (eg-read-string guide eg-credit-length)))
   guide)
 
-(defun eg-guide-p (guide)
+(defun eg-guide-good-magic-p (guide)
   "Does GUIDE appear to be a Norton Guide file?"
   (memq (eg-guide-magic guide) (list eg-magic-ng eg-magic-eh)))
 
