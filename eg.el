@@ -16,6 +16,7 @@
   menu-count
   title
   credits
+  menus
   (pos 0))
 
 (defun eg-skip (guide bytes)
