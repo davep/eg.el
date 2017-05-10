@@ -77,6 +77,10 @@ Any trailing NUL characters are removed."
                  collect (eg-read-string guide eg-credit-length)))
   guide)
 
+(defun eg-guide-has-menus-p (guide)
+  "Does GUIDE have menus?"
+  (> (eg-guide-menu-count guide) 0))
+
 (defun eg-open (file)
   "Open FILE and return the buffer that'll be used to read it."
   (when (file-exists-p file)
