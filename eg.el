@@ -1,5 +1,11 @@
 (require 'cl-lib)
 
+(defconst eg-magic-ng "NG"
+  "Magic marker for a guide built with Norton Guide.")
+
+(defconst eg-magic-eh "EH"
+  "Magic marker for a guide built with Expert Help.")
+
 (defconst eg-title-length 40
   "Maximum length of a guide title")
 
@@ -76,6 +82,10 @@ Any trailing NUL characters are removed."
         (cl-loop for n from 0 to 4
                  collect (eg-read-string guide eg-credit-length)))
   guide)
+
+(defun eg-guide-p (guide)
+  "Does GUIDE appear to be a Norton Guide file?"
+  (memq (eg-guide-magic guide) (list eg-magic-ng eg-magic-eh)))
 
 (defun eg-guide-has-menus-p (guide)
   "Does GUIDE have menus?"
