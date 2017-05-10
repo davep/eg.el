@@ -87,6 +87,15 @@ Any trailing NUL characters are removed."
   "Does GUIDE appear to be a Norton Guide file?"
   (memq (eg-guide-magic guide) (list eg-magic-ng eg-magic-eh)))
 
+(defun eg-guide-type (guide)
+  "Return a string that describes the type of GUIDE."
+  (cdr
+   (or
+    (assoc (eg-guide-magic guide)
+           `((,eg-magic-ng . "Norton Guide")
+             (,eg-magic-eh . "Expert Help")))
+    (cons nil "Unknown"))))
+
 (defun eg-guide-has-menus-p (guide)
   "Does GUIDE have menus?"
   (> (eg-guide-menu-count guide) 0))
