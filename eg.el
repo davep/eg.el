@@ -47,7 +47,7 @@
     (cl-incf (eg-guide-pos guide) len)
     (buffer-string)))
 
-(defun eg-read-byte (guide &optional decrypt)
+(cl-defun eg-read-byte (guide &optional (decrypt t))
   "Read a byte from GUIDE.
 
 If DECRYPT is non-nil, decrypt it."
@@ -55,16 +55,17 @@ If DECRYPT is non-nil, decrypt it."
     ;; TODO: Decrypt
     (aref byte 0)))
 
-(defun eg-read-word (guide)
+(cl-defun eg-read-word (guide &optional (decrypt t))
   "Read a word from GUIDE."
-  (let* ((lo (eg-read-byte guide))
-         (hi (eg-read-byte guide)))
+  (let* ((lo (eg-read-byte guide decrypt))
+         (hi (eg-read-byte guide decrypt)))
     (+ (lsh hi 8)) lo))
 
-(defun eg-read-string (guide len)
+(cl-defun eg-read-string (guide len &optional (decrypt t))
   "Read a string of LEN characters from GUIDE.
 
 Any trailing NUL characters are removed."
+  ;; TODO: Decrypt.
   (replace-regexp-in-string "\0+$" "" (eg-read guide len)))
 
 (defun eg-read-header (guide)
@@ -74,13 +75,13 @@ Any trailing NUL characters are removed."
   ;; Skip 4 bytes (I'm not sure what they are for).
   (eg-skip guide 4)
   ;; Get the count of menus.
-  (setf (eg-guide-menu-count guide) (eg-read-word guide))
+  (setf (eg-guide-menu-count guide) (eg-read-word guide nil))
   ;; Get the title of the guide.
-  (setf (eg-guide-title guide) (eg-read-string guide eg-title-length))
+  (setf (eg-guide-title guide) (eg-read-string guide eg-title-length nil))
   ;; Load the credits for the guide.
   (setf (eg-guide-credits guide)
         (cl-loop for n from 0 to 4
-                 collect (eg-read-string guide eg-credit-length)))
+                 collect (eg-read-string guide eg-credit-length nil)))
   guide)
 
 (defun eg-guide-good-magic-p (guide)
