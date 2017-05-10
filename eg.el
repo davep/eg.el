@@ -6,6 +6,15 @@
 (defconst eg-credit-length 66
   "Maximum length of a line in a guide's credits.")
 
+(defconst eg-entry-short 0
+  "Id of a short entry in a guide.")
+
+(defconst eg-entry-long 1
+  "Id of a long entry in a guide.")
+
+(defconst eg-entry-menu 2
+  "Id of a menu in a guide.")
+
 (defvar eg-buffer-name-function (lambda (file) (format "*EG: %s*" file))
   "Function that names a buffer for reading from a Norton guide file.")
 
