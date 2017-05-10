@@ -1,5 +1,8 @@
 (require 'cl-lib)
 
+(defun eg-debug (&rest args)
+  (apply #'message args))
+
 (defconst eg-magic-ng "NG"
   "Magic marker for a guide built with Norton Guide.")
 
@@ -11,6 +14,9 @@
 
 (defconst eg-credit-length 66
   "Maximum length of a line in a guide's credits.")
+
+(defconst eg-prompt-length 128
+  "Maximum length of a prompt on a menu.")
 
 (defconst eg-entry-short 0
   "Id of a short entry in a guide.")
@@ -34,14 +40,19 @@
   menus
   (pos 0))
 
-(defun eg-skip (guide bytes)
+(cl-defstruct eg-menu
+  title
+  prompt-count
+  prompts
+  offsets)
+
+(cl-defun eg-skip (guide &optional (bytes 1))
   "Skip BYTES bytes in GUIDE."
   (cl-incf (eg-guide-pos guide) bytes))
 
 (defun eg-read (guide len)
   "Read LEN bytes from GUIDE."
   (with-current-buffer (eg-guide-buffer guide)
-    (setf (buffer-string) "")
     (insert-file-contents-literally
      (eg-guide-file guide) nil (eg-guide-pos guide) (+ (eg-guide-pos guide) len))
     (cl-incf (eg-guide-pos guide) len)
@@ -52,8 +63,9 @@
 
 If DECRYPT is non-nil, decrypt it."
   (let ((byte (eg-read guide 1)))
-    ;; TODO: Decrypt
-    (aref byte 0)))
+    (if decrypt
+        (logxor (aref byte 0) 26)
+      (aref byte 0))))
 
 (cl-defun eg-read-word (guide &optional (decrypt t))
   "Read a word from GUIDE."
@@ -61,12 +73,37 @@ If DECRYPT is non-nil, decrypt it."
          (hi (eg-read-byte guide decrypt)))
     (+ (lsh hi 8)) lo))
 
+(cl-defun eg-read-long (guide &optional (decrypt t))
+  "Read a long from GUIDE."
+  (let* ((lo (eg-read-word guide decrypt))
+         (hi (eg-read-word guide decrypt)))
+    (+ (lsh hi 16) lo)))
+
+(cl-defun eg-decrypt-string (s)
+  (mapconcat
+   (lambda (c)
+     (make-string 1 c))
+   (mapcar
+    (lambda (c)
+      (logxor c 26))
+    s) ""))
+
 (cl-defun eg-read-string (guide len &optional (decrypt t))
   "Read a string of LEN characters from GUIDE.
 
 Any trailing NUL characters are removed."
-  ;; TODO: Decrypt.
-  (replace-regexp-in-string "\0+$" "" (eg-read guide len)))
+  (let ((s (eg-read guide len)))
+    (replace-regexp-in-string "\0.*" ""
+                              (if decrypt
+                                  (eg-decrypt-string s)
+                                s))))
+
+(cl-defun eg-read-string-z (guide len &optional (decrypt t))
+  "Read string up to LEN characters, stopping if a nul is encountered."
+  (let ((pos (eg-guide-pos guide)))
+    (let ((s (eg-read-string guide len decrypt)))
+      (setf (eg-guide-pos guide) (+ 1 pos (length s)))
+      s)))
 
 (defun eg-skip-entry (guide)
   "Skip an entry/menu in GUIDE."
@@ -88,6 +125,50 @@ Any trailing NUL characters are removed."
                  collect (eg-read-string guide eg-credit-length nil)))
   guide)
 
+(defun eg-read-menu (guide)
+  "Read a menu from GUIDE."
+  ;; Skip the byte size of the menu entry.
+  (eg-read-word guide)
+  (let ((menu (make-eg-menu)))
+    ;; Get the number of prompts on the menu.
+    (setf (eg-menu-prompt-count menu) (1- (eg-read-word guide)))
+    ;; Skip 20 bytes.
+    (eg-skip guide 20)
+    ;; Get the offsets into the file for each prompt on the menu
+    (setf (eg-menu-offsets menu)
+          (cl-loop for n from 1 to (eg-menu-prompt-count menu)
+                   collect (eg-read-long guide)))
+    ;; Skip some unknown values.
+    (eg-skip guide (* (1+ (eg-menu-prompt-count menu)) 8))
+    ;; Get the menu's title.
+    (setf (eg-menu-title menu) (eg-read-string-z guide eg-prompt-length))
+    ;; Now load up the prompts.
+    (setf (eg-menu-prompts menu)
+          (cl-loop for n from 1 to (eg-menu-prompt-count menu)
+                   collect (eg-read-string-z guide eg-prompt-length)))
+    ;; Finally, skip an unknown byte.
+    (eg-skip guide)
+    menu))
+
+(defun eg-read-menus (guide)
+  "Read the menus in GUIDE."
+  (let ((i 0))
+    (while (< i (eg-guide-menu-count guide))
+      (let ((type (eg-read-word guide)))
+        (cond ((= type eg-entry-short)
+               (eg-debug "Skip short")
+               (eg-skip-entry guide))
+              ((= type eg-entry-long)
+               (eg-debug "Skip long")
+               (eg-skip-entry guide))
+              ((= eg-entry-menu)
+               (eg-debug "Read menu")
+               (eg-debug "Menu: %s" (eg-menu-title (eg-read-menu guide)))
+               (cl-incf i))
+              (t
+               (eg-debug "Bailing on eg-read-menus")
+               (setq i (eg-guide-menu-count guide))))))))
+
 (defun eg-guide-good-magic-p (guide)
   "Does GUIDE appear to be a Norton Guide file?"
   (memq (eg-guide-magic guide) (list eg-magic-ng eg-magic-eh)))
@@ -108,9 +189,12 @@ Any trailing NUL characters are removed."
 (defun eg-open (file)
   "Open FILE and return the buffer that'll be used to read it."
   (when (file-exists-p file)
-    (eg-read-header
-     (with-current-buffer (generate-new-buffer (funcall eg-buffer-name-function file))
-       (make-eg-guide :file file :buffer (current-buffer))))))
+    (let ((guide (eg-read-header
+                  (with-current-buffer (generate-new-buffer (funcall eg-buffer-name-function file))
+                    (make-eg-guide :file file :buffer (current-buffer))))))
+      (when (eg-guide-has-menus-p guide)
+        (eg-read-menus guide))
+      guide)))
 
 (defun eg-close (guide)
   "Close GUIDE."
