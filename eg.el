@@ -95,7 +95,7 @@ Any trailing NUL characters are removed."
   "Open FILE and return the buffer that'll be used to read it."
   (when (file-exists-p file)
     (eg-read-header
-     (with-current-buffer (generate-new-buffer (format "*EH: %s*" file))
+     (with-current-buffer (generate-new-buffer (funcall eg-buffer-name-function file))
        (make-eg-guide :file file :buffer (current-buffer))))))
 
 (defun eg-close (guide)
