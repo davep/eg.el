@@ -204,4 +204,4 @@ Any trailing NUL characters are removed."
 (defun eg-test ()
   (let ((guide (eg-open "~/Google Drive/Norton Guides/acebase.ng")))
     (eg-close guide)
-    (eg-guide-menus guide)))
+    guide))
