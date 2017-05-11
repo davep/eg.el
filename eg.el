@@ -92,7 +92,7 @@ If DECRYPT is non-nil, decrypt it."
 
 Any trailing NUL characters are removed."
   (let ((s (eg-read guide len)))
-    (replace-regexp-in-string "\0.*" ""
+    (replace-regexp-in-string "\0[\0-\377[:nonascii:]]*" ""
                               (if decrypt
                                   (eg-decrypt-string s)
                                 s))))
