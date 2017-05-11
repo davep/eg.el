@@ -53,10 +53,10 @@
 (defun eg-read (guide len)
   "Read LEN bytes from GUIDE."
   (with-current-buffer (eg-guide-buffer guide)
-    (insert-file-contents-literally
-     (eg-guide-file guide) nil (eg-guide-pos guide) (+ (eg-guide-pos guide) len) t)
-    (cl-incf (eg-guide-pos guide) len)
-    (buffer-substring-no-properties (point-min) (+ (point-min) len))))
+    (let* ((from (+ (point-min) (eg-guide-pos guide)))
+           (to   (+ from len)))
+      (cl-incf (eg-guide-pos guide) len)
+      (buffer-substring-no-properties from to))))
 
 (cl-defun eg-read-byte (guide &optional (decrypt t))
   "Read a byte from GUIDE.
@@ -102,6 +102,7 @@ Any trailing NUL characters are removed."
   "Read string up to LEN characters, stopping if a nul is encountered."
   (let ((pos (eg-guide-pos guide)))
     (let ((s (eg-read-string guide len decrypt)))
+      (eg-debug "eg-read-string-z[%s]" s)
       (setf (eg-guide-pos guide) (+ 1 pos (length s)))
       s)))
 
@@ -191,6 +192,9 @@ Any trailing NUL characters are removed."
   (when (file-exists-p file)
     (let ((guide (eg-read-header
                   (with-current-buffer (generate-new-buffer (funcall eg-buffer-name-function file))
+                    (setq buffer-file-coding-system 'binary)
+                    (set-buffer-file-coding-system nil)
+                    (insert-file-contents-literally file)
                     (make-eg-guide :file file :buffer (current-buffer))))))
       (when (eg-guide-has-menus-p guide)
         (eg-read-menus guide))
@@ -199,3 +203,8 @@ Any trailing NUL characters are removed."
 (defun eg-close (guide)
   "Close GUIDE."
   (kill-buffer (eg-guide-buffer guide)))
+
+(defun eg-test ()
+  (let ((guide (eg-open "~/Google Drive/Norton Guides/acebase.ng")))
+    (eg-close guide)
+    (eg-guide-type guide)))
