@@ -38,6 +38,7 @@
   title
   credits
   menus
+  first-entry-pos
   (pos 0))
 
 (cl-defstruct eg-menu
@@ -193,6 +194,7 @@ Any trailing NUL characters are removed."
                     (make-eg-guide :file file :buffer (current-buffer))))))
       (when (eg-guide-has-menus-p guide)
         (eg-read-menus guide))
+      (setf (eg-guide-first-entry-pos guide) (eg-guide-pos guide))
       guide)))
 
 (defun eg-close (guide)
