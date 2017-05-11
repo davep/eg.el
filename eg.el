@@ -58,14 +58,18 @@
       (cl-incf (eg-guide-pos guide) len)
       (buffer-substring-no-properties from to))))
 
+(defun eg-decrypt (n)
+  "Decrypt value N."
+  (logxor n 26))
+
 (cl-defun eg-read-byte (guide &optional (decrypt t))
   "Read a byte from GUIDE.
 
 If DECRYPT is non-nil, decrypt it."
-  (let ((byte (eg-read guide 1)))
+  (let ((byte (aref (eg-read guide 1) 0)))
     (if decrypt
-        (logxor (aref byte 0) 26)
-      (aref byte 0))))
+        (eg-decrypt byte)
+      byte)))
 
 (cl-defun eg-read-word (guide &optional (decrypt t))
   "Read a word from GUIDE."
@@ -80,13 +84,8 @@ If DECRYPT is non-nil, decrypt it."
     (+ (lsh hi 16) lo)))
 
 (cl-defun eg-decrypt-string (s)
-  (mapconcat
-   (lambda (c)
-     (make-string 1 c))
-   (mapcar
-    (lambda (c)
-      (logxor c 26))
-    s) ""))
+  "Decrypt string S."
+  (mapconcat (lambda (c) (make-string 1 c)) (mapcar #'eg-decrypt s) ""))
 
 (cl-defun eg-read-string (guide len &optional (decrypt t))
   "Read a string of LEN characters from GUIDE.
