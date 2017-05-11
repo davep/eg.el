@@ -54,9 +54,9 @@
   "Read LEN bytes from GUIDE."
   (with-current-buffer (eg-guide-buffer guide)
     (insert-file-contents-literally
-     (eg-guide-file guide) nil (eg-guide-pos guide) (+ (eg-guide-pos guide) len))
+     (eg-guide-file guide) nil (eg-guide-pos guide) (+ (eg-guide-pos guide) len) t)
     (cl-incf (eg-guide-pos guide) len)
-    (buffer-string)))
+    (buffer-substring-no-properties (point-min) (+ (point-min) len))))
 
 (cl-defun eg-read-byte (guide &optional (decrypt t))
   "Read a byte from GUIDE.
