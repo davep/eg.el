@@ -159,6 +159,8 @@ Any trailing NUL characters are removed."
               ((= type eg-entry-long)
                (eg-skip-entry guide))
               ((= eg-entry-menu)
+               (setf (eg-guide-menus guide)
+                     (nconc (eg-guide-menus guide) (list (eg-read-menu guide))))
                (cl-incf i))
               (t
                (setq i (eg-guide-menu-count guide))))))))
@@ -200,4 +202,4 @@ Any trailing NUL characters are removed."
 (defun eg-test ()
   (let ((guide (eg-open "~/Google Drive/Norton Guides/acebase.ng")))
     (eg-close guide)
-    (eg-guide-type guide)))
+    (eg-guide-menus guide)))
