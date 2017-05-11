@@ -175,12 +175,12 @@ Any trailing NUL characters are removed."
 
 (defun eg-guide-type (guide)
   "Return a string that describes the type of GUIDE."
-  (cdr
-   (or
-    (assoc (eg-guide-magic guide)
-           `((,eg-magic-ng . "Norton Guide")
-             (,eg-magic-eh . "Expert Help")))
-    (cons nil "Unknown"))))
+  (cond ((string= (eg-guide-magic guide) eg-magic-ng)
+         "Norton Guide")
+        ((string= (eg-guide-magic guide) eg-magic-eh)
+         "Expert Help")
+        (t
+         "Unknown")))
 
 (defun eg-guide-has-menus-p (guide)
   "Does GUIDE have menus?"
