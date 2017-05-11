@@ -47,6 +47,22 @@
   prompts
   offsets)
 
+(cl-defstruct eg-entry
+  offset
+  type
+  size
+  line-count
+  has-see-also
+  parent-liine
+  parent
+  parent-menu
+  parent-prompt
+  previous
+  next
+  offsets
+  lines
+  see-also)
+
 (cl-defun eg-skip (guide &optional (bytes 1))
   "Skip BYTES bytes in GUIDE."
   (cl-incf (eg-guide-pos guide) bytes))
