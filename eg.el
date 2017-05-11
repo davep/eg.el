@@ -101,7 +101,6 @@ Any trailing NUL characters are removed."
   "Read string up to LEN characters, stopping if a nul is encountered."
   (let ((pos (eg-guide-pos guide)))
     (let ((s (eg-read-string guide len decrypt)))
-      (eg-debug "eg-read-string-z[%s]" s)
       (setf (eg-guide-pos guide) (+ 1 pos (length s)))
       s)))
 
@@ -156,17 +155,12 @@ Any trailing NUL characters are removed."
     (while (< i (eg-guide-menu-count guide))
       (let ((type (eg-read-word guide)))
         (cond ((= type eg-entry-short)
-               (eg-debug "Skip short")
                (eg-skip-entry guide))
               ((= type eg-entry-long)
-               (eg-debug "Skip long")
                (eg-skip-entry guide))
               ((= eg-entry-menu)
-               (eg-debug "Read menu")
-               (eg-debug "Menu: %s" (eg-menu-title (eg-read-menu guide)))
                (cl-incf i))
               (t
-               (eg-debug "Bailing on eg-read-menus")
                (setq i (eg-guide-menu-count guide))))))))
 
 (defun eg-guide-good-magic-p (guide)
