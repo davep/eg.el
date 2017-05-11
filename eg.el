@@ -27,7 +27,7 @@
 (defconst eg-entry-menu 2
   "Id of a menu in a guide.")
 
-(defvar eg-buffer-name-function (lambda (file) (format "*EG: %s*" file))
+(defvar eg-buffer-name-function (lambda (file) (format " *EG: %s*" file))
   "Function that names a buffer for reading from a Norton guide file.")
 
 (cl-defstruct eg-guide
