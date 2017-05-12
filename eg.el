@@ -245,7 +245,7 @@ Any trailing NUL characters are removed."
 (defun eg-load-see-alsos (guide)
   "Load a list of see also entries from current position in GUIDE."
   (let ((see-also (make-eg-see-also)))
-    (setf (eg-see-also-prompt-count see-also) (max (eg-read-word guide) eg-max-see-alsos))
+    (setf (eg-see-also-prompt-count see-also) (min (eg-read-word guide) eg-max-see-alsos))
     (setf (eg-see-also-offsets see-also)
           (cl-loop for n from 1 to (eg-see-also-prompt-count see-also)
                    collect (eg-read-long guide)))
