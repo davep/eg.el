@@ -122,16 +122,22 @@ If DECRYPT is non-nil, decrypt it."
   "Decrypt string S."
   (mapconcat (lambda (c) (make-string 1 c)) (mapcar #'eg-decrypt s) ""))
 
+(defun eg-rle-marker-p (c)
+  "Does C look like an RLE marker?"
+  (or
+   (= c eg-rle-marker)
+   (= c (decode-char 'eight-bit eg-rle-marker))))
+
 (defun eg-expand-string (s)
   "RLE-expand spaces in string S."
   (apply #'concat
          (cl-loop for c across s
                   with expand = nil
-                  if expand collect (if (= c eg-rle-marker)
+                  if expand collect (if (eg-rle-marker-p c)
                                         " "
                                       (make-string c 32))
                   and do (setq expand nil)
-                  else if (= c eg-rle-marker) do (setq expand t)
+                  else if (eg-rle-marker-p c) do (setq expand t)
                   else collect (make-string 1 c))))
 
 (cl-defun eg-read-string (guide len &optional (decrypt t))
