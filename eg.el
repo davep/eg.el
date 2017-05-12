@@ -290,6 +290,8 @@ Any trailing NUL characters are removed."
     ;; Load the main "header" information for an entry.
     (setf (eg-entry-offset        entry) (eg-guide-pos guide))
     (setf (eg-entry-type          entry) (eg-read-word guide))
+    (unless (or (eg-entry-short-p entry) (eg-entry-long-p entry))
+      (error "Not a valid entry type"))
     (setf (eg-entry-size          entry) (eg-read-word guide))
     (setf (eg-entry-line-count    entry) (eg-read-word guide))
     (setf (eg-entry-has-see-also  entry) (eg-read-word guide))
