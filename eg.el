@@ -109,34 +109,64 @@ LEN is the number of bytes to read."
       (cl-incf (eg-guide-pos guide) len)
       (buffer-substring-no-properties from to))))
 
-(defun eg-decrypt (n)
+(defun eg-decrypt (n decrypt)
   "Decrypt value N."
-  (logxor n 26))
+  (if decrypt
+      (logxor n 26)
+    n))
+
+(defun eg-make-signed-byte (n)
+  (if (zerop (logand n #x80))
+      n
+    (- n #x100)))
 
 (cl-defun eg-read-byte (guide &optional (decrypt t))
   "Read a byte from GUIDE.
 
 If DECRYPT is non-nil, decrypt it."
   (let ((byte (string-to-char (eg-read guide 1))))
-    (if decrypt
-        (eg-decrypt byte)
-      byte)))
+    (eg-make-signed-byte (eg-decrypt byte decrypt))))
+
+(defun eg-make-signed-word (n)
+  (if (zerop (logand n #x8000))
+      n
+    (- n #x10000)))
 
 (cl-defun eg-read-word (guide &optional (decrypt t))
   "Read a word from GUIDE."
-  (let* ((lo (eg-read-byte guide decrypt))
-         (hi (eg-read-byte guide decrypt)))
-    (+ (lsh hi 8)) lo))
+  (let ((word (eg-read guide 2)))
+    (let ((lo (eg-decrypt (aref word 0) decrypt))
+          (hi (eg-decrypt (aref word 1) decrypt)))
+      (eg-make-signed-word (+ (lsh hi 8) lo)))))
+
+(defun eg-make-signed-long (n)
+  (if (zerop (logand n #x80000000))
+      n
+    (- n #x100000000)))
 
 (cl-defun eg-read-long (guide &optional (decrypt t))
   "Read a long from GUIDE."
-  (let* ((lo (eg-read-word guide decrypt))
-         (hi (eg-read-word guide decrypt)))
-    (+ (lsh hi 16) lo)))
+  (let ((long (eg-read guide 4)))
+    (let ((lolo (eg-decrypt (aref long 0) decrypt))
+          (lohi (eg-decrypt (aref long 1) decrypt))
+          (hilo (eg-decrypt (aref long 2) decrypt))
+          (hihi (eg-decrypt (aref long 3) decrypt)))
+      (eg-make-signed-long
+       (+
+        (lsh
+         (+ (lsh hihi 8) hilo)
+         16)
+        (+ (lsh lohi 8) lolo))))))
 
 (cl-defun eg-decrypt-string (s)
   "Decrypt string S."
-  (mapconcat (lambda (c) (make-string 1 c)) (mapcar #'eg-decrypt s) ""))
+  (mapconcat
+   (lambda (c)
+     (make-string 1 c))
+   (mapcar
+    (lambda (c)
+      (eg-decrypt c t))
+    s) ""))
 
 (defun eg-rle-marker-p (c)
   "Does C look like an RLE marker?"
