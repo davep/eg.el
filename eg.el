@@ -337,6 +337,23 @@ New line markers are added at the end of each line."
          (eg-read-entry guide))
       (eg-close guide))))
 
+(defun eg-dump-entry (entry)
+  (list
+   (cons 'offset (eg-entry-offset entry))
+   (cons 'type (eg-entry-type entry))
+   (cons 'size(eg-entry-size entry))
+   (cons 'count (eg-entry-line-count entry))
+   (cons 'see-also (eg-entry-has-see-also entry))
+   (cons 'parent-line (eg-entry-parent-line entry))
+   (cons 'parent (eg-entry-parent entry))
+   (cons 'parent-menu (eg-entry-parent-menu entry))
+   (cons 'parent-prompt (eg-entry-parent-prompt entry))
+   (cons 'previous (eg-entry-previous entry))
+   (cons 'next (eg-entry-next entry))
+   (cons 'offsets (eg-entry-offsets entry))
+   (cons 'lines (eg-entry-lines entry))
+   (cons 'see-also (eg-entry-see-also entry))))
+
 (provide 'eg)
 
 ;;; eg.el ends here
