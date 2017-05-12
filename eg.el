@@ -117,7 +117,7 @@ LEN is the number of bytes to read."
   "Read a byte from GUIDE.
 
 If DECRYPT is non-nil, decrypt it."
-  (let ((byte (aref (eg-read guide 1) 0)))
+  (let ((byte (string-to-char (eg-read guide 1))))
     (if decrypt
         (eg-decrypt byte)
       byte)))
