@@ -18,6 +18,9 @@
 (defconst eg-prompt-length 128
   "Maximum length of a prompt on a menu.")
 
+(defconst eg-line-length 1024
+  "Maximum length of a line in a guide entry.")
+
 (defconst eg-entry-short 0
   "Id of a short entry in a guide.")
 
@@ -26,6 +29,13 @@
 
 (defconst eg-entry-menu 2
   "Id of a menu in a guide.")
+
+(defconst eg-max-see-alsos 20
+  "Maximum number of see-also items for a single entry in a guide.
+
+This is the limit published in the Expert Help Compiler manual
+and, while this limit isn't really needed in this code, it does
+help guard against corrupt guides.")
 
 (defvar eg-buffer-name-function (lambda (file) (format " *EG: %s*" file))
   "Function that names a buffer for reading from a Norton guide file.")
@@ -53,7 +63,7 @@
   size
   line-count
   has-see-also
-  parent-liine
+  parent-line
   parent
   parent-menu
   parent-prompt
@@ -62,6 +72,11 @@
   offsets
   lines
   see-also)
+
+(cl-defstruct eg-see-also
+  prompt-count
+  prompts
+  offsets)
 
 (cl-defun eg-skip (guide &optional (bytes 1))
   "Skip BYTES bytes in GUIDE."
@@ -182,6 +197,58 @@ Any trailing NUL characters are removed."
               (t
                (setq i (eg-guide-menu-count guide))))))))
 
+(defun eg-entry-short-p (entry)
+  "Is ENTRY a short entry?"
+  (= (eg-entry-type entry) eg-entry-short))
+
+(defun eg-entry-long-p (entry)
+  "Is ENTRY a long entry?"
+  (= (eg-entry-type entry) eg-entry-long))
+
+(defun eg-load-see-alsos (guide)
+  "Load a list of see also entries from current position in GUIDE."
+  (let ((see-also (make-eg-see-also)))
+    (setf (eg-see-also-prompt-count see-also) (max (eg-read-word guide) eg-max-see-alsos))
+    (setf (eg-see-also-offsets see-also)
+          (cl-loop for n from 1 to (eg-see-also-prompt-count see-also)
+                   collect (eg-read-long guide)))
+    (setf (eg-see-also-prompts see-also)
+          (cl-loop for n from 1 to (eg-see-also-prompt-count see-also)
+                   collect (eg-read-string-z guide eg-line-length)))
+    see-also))
+
+(defun eg-read-entry (guide)
+  "Read the entry at the current location in GUIDE."
+  (let ((entry (make-eg-entry)))
+    ;; Load the main "header" information for an entry.
+    (setf (eg-entry-offset        entry) (eg-guide-pos guide))
+    (setf (eg-entry-type          entry) (eg-read-word guide))
+    (setf (eg-entry-size          entry) (eg-read-word guide))
+    (setf (eg-entry-line-count    entry) (eg-read-word guide))
+    (setf (eg-entry-has-see-also  entry) (eg-read-word guide))
+    (setf (eg-entry-parent-line   entry) (eg-read-word guide))
+    (setf (eg-entry-parent        entry) (eg-read-long guide))
+    (setf (eg-entry-parent-menu   entry) (eg-read-word guide))
+    (setf (eg-entry-parent-prompt entry) (eg-read-word guide))
+    (setf (eg-entry-previous      entry) (eg-read-long guide))
+    (setf (eg-entry-next          entry) (eg-read-long guide))
+    ;; If it's a short entry...
+    (when (eg-entry-short-p entry)
+      ;; ...load the offsets associated with each line.
+      (setf (eg-entry-offsets entry)
+            (cl-loop for n from 1 to (eg-entry-line-count entry)
+                     do (eg-read-word guide) ; Skip unknown word.
+                     collect (eg-read-long guide))))
+    ;; Load the lines for the entry.
+    (setf (eg-entry-lines entry)
+          (cl-loop for n from 1 to (eg-entry-line-count entry)
+                   collect (eg-read-string-z guide eg-line-length)))
+    ;; If it's a long entry, and it has a see-also list...
+    (when (and (eg-entry-long-p entry) (eg-entry-has-see-also entry))
+      ;; ...load the see-alsos.
+      (setf (eg-entry-see-also entry) (eg-load-see-alsos guide)))
+    entry))
+
 (defun eg-guide-good-magic-p (guide)
   "Does GUIDE appear to be a Norton Guide file?"
   (memq (eg-guide-magic guide) (list eg-magic-ng eg-magic-eh)))
@@ -219,5 +286,6 @@ Any trailing NUL characters are removed."
 
 (defun eg-test ()
   (let ((guide (eg-open "~/Google Drive/Norton Guides/acebase.ng")))
-    (eg-close guide)
-    guide))
+    (unwind-protect
+        (eg-read-entry guide)
+      (eg-close guide))))
