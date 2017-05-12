@@ -314,9 +314,9 @@ New line markers are added at the end of each line."
   (when (file-exists-p file)
     (let ((guide (eg-read-header
                   (with-current-buffer (generate-new-buffer (funcall eg-buffer-name-function file))
-                    (setq buffer-file-coding-system 'binary)
-                    (set-buffer-file-coding-system nil)
-                    (insert-file-contents-literally file)
+                    (set-buffer-multibyte nil)
+                    (let ((coding-system-for-read 'binary))
+                      (insert-file-contents-literally file))
                     (make-eg-guide :file file :buffer (current-buffer))))))
       (when (eg-guide-has-menus-p guide)
         (eg-read-menus guide))
