@@ -1,7 +1,21 @@
-(require 'cl-lib)
+;;; eg.el --- Norton Guide reader for GNU Emacs
+;; Copyright 2017 by Dave Pearson <davep@davep.org>
 
-(defun eg-debug (&rest args)
-  (apply #'message args))
+;; eg.el is free software distributed under the terms of the GNU General
+;; Public Licence, version 2 or (at your option) any later version. For
+;; details see the file COPYING.
+
+;;; Commentary:
+;;
+;; eg.el provides code for reading the content of help databases built with
+;; Norton Guide and Expert Help.
+;;
+;; eg.el is currently a work in progress. Expect it to not work, or work
+;; different, or something.
+
+;;; Code:
+
+(require 'cl-lib)
 
 (defconst eg-magic-ng "NG"
   "Magic marker for a guide built with Norton Guide.")
@@ -10,7 +24,7 @@
   "Magic marker for a guide built with Expert Help.")
 
 (defconst eg-title-length 40
-  "Maximum length of a guide title")
+  "Maximum length of a guide title.")
 
 (defconst eg-credit-length 66
   "Maximum length of a line in a guide's credits.")
@@ -86,7 +100,9 @@ help guard against corrupt guides.")
   (cl-incf (eg-guide-pos guide) bytes))
 
 (defun eg-read (guide len)
-  "Read LEN bytes from GUIDE."
+  "Read bytes from GUIDE.
+
+LEN is the number of bytes to read."
   (with-current-buffer (eg-guide-buffer guide)
     (let* ((from (+ (point-min) (eg-guide-pos guide)))
            (to   (+ from len)))
@@ -306,7 +322,12 @@ Any trailing NUL characters are removed."
   (kill-buffer (eg-guide-buffer guide)))
 
 (defun eg-test ()
+  "Testing helper."
   (let ((guide (eg-open "~/Google Drive/Norton Guides/acebase.ng")))
     (unwind-protect
         (eg-read-entry guide)
       (eg-close guide))))
+
+(provide 'eg)
+
+;;; eg.el ends here
