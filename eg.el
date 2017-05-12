@@ -251,7 +251,7 @@ Any trailing NUL characters are removed."
                    collect (eg-read-long guide)))
     (setf (eg-see-also-prompts see-also)
           (cl-loop for n from 1 to (eg-see-also-prompt-count see-also)
-                   collect (eg-read-string-z guide eg-line-length)))
+                   collect (eg-expand-string (eg-read-string-z guide eg-prompt-length))))
     see-also))
 
 (defun eg-read-entry (guide)
