@@ -331,7 +331,10 @@ New line markers are added at the end of each line."
   "Testing helper."
   (let ((guide (eg-open "~/Google Drive/Norton Guides/acebase.ng")))
     (unwind-protect
-        (eg-read-entry guide)
+        (list
+         (eg-read-entry guide)
+         (eg-read-entry guide)
+         (eg-read-entry guide))
       (eg-close guide))))
 
 (provide 'eg)
