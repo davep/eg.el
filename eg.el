@@ -213,7 +213,7 @@ Any trailing NUL characters are removed."
     ;; Now load up the prompts.
     (setf (eg-menu-prompts menu)
           (cl-loop for n from 1 to (eg-menu-prompt-count menu)
-                   collect (eg-read-string-z guide eg-prompt-length)))
+                   collect (eg-expand-string (eg-read-string-z guide eg-prompt-length))))
     ;; Finally, skip an unknown byte.
     (eg-skip guide)
     menu))
