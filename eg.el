@@ -257,7 +257,7 @@ Any trailing NUL characters are removed."
     ;; Load the lines for the entry.
     (setf (eg-entry-lines entry)
           (cl-loop for n from 1 to (eg-entry-line-count entry)
-                   collect (eg-read-string-z guide eg-line-length)))
+                   collect (eg-expand-string (eg-read-string-z guide eg-line-length))))
     ;; If it's a long entry, and it has a see-also list...
     (when (and (eg-entry-long-p entry) (eg-entry-has-see-also entry))
       ;; ...load the see-alsos.
