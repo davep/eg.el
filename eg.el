@@ -286,6 +286,12 @@ Any trailing NUL characters are removed."
       (setf (eg-entry-see-also entry) (eg-load-see-alsos guide)))
     entry))
 
+(defun eg-entry-text (entry)
+  "Get the text of ENTRY as a single string.
+
+New line markers are added at the end of each line."
+  (cl-loop for line in (eg-entry-lines entry) concat line concat "\n"))
+
 (defun eg-guide-good-magic-p (guide)
   "Does GUIDE appear to be a Norton Guide file?"
   (memq (eg-guide-magic guide) (list eg-magic-ng eg-magic-eh)))
