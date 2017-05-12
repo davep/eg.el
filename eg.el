@@ -37,6 +37,9 @@ This is the limit published in the Expert Help Compiler manual
 and, while this limit isn't really needed in this code, it does
 help guard against corrupt guides.")
 
+(defconst eg-rle-marker 255
+  "Value of a guide's RLE marker.")
+
 (defvar eg-buffer-name-function (lambda (file) (format " *EG: %s*" file))
   "Function that names a buffer for reading from a Norton guide file.")
 
@@ -118,6 +121,18 @@ If DECRYPT is non-nil, decrypt it."
 (cl-defun eg-decrypt-string (s)
   "Decrypt string S."
   (mapconcat (lambda (c) (make-string 1 c)) (mapcar #'eg-decrypt s) ""))
+
+(defun eg-expand-string (s)
+  "RLE-expand spaces in string S."
+  (apply #'concat
+         (cl-loop for c across s
+                  with expand = nil
+                  if expand collect (if (= c eg-rle-marker)
+                                        " "
+                                      (make-string c 32))
+                  and do (setq expand nil)
+                  else if (= c eg-rle-marker) do (setq expand t)
+                  else collect (make-string 1 c))))
 
 (cl-defun eg-read-string (guide len &optional (decrypt t))
   "Read a string of LEN characters from GUIDE.
