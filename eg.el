@@ -372,6 +372,22 @@ New line markers are added at the end of each line."
   "Does GUIDE have menus?"
   (> (eg-guide-menu-count guide) 0))
 
+(defun eg-entry-looking-at-short-p (guide)
+  "Does it look like GUIDE is positioned on a short entry?"
+  (eg-entry-short-p (eg-load-entry guide)))
+
+(defun eg-entry-looking-at-long-p (guide)
+  "Does it look like GUIDE is positioned on a long entry?"
+  (eg-entry-long-p (eg-load-entry guide)))
+
+(defun eg-eof-p (guide)
+  "Do we appear to be at the end of GUIDE?"
+  (or
+   (with-current-buffer (eg-guide-buffer guide)
+     (>= (+ (point-min) (eg-guide-pos guide)) (point-max)))
+   (not (or (eg-entry-looking-at-short-p guide)
+            (eg-entry-looking-at-long-p guide)))))
+
 (defun eg-open (file)
   "Open FILE and return the buffer that'll be used to read it."
   (when (file-exists-p file)
