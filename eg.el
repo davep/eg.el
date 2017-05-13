@@ -290,33 +290,33 @@ Any trailing NUL characters are removed."
     ;; Load the main "header" information for an entry.
     (setf (eg-entry-offset        entry) (eg-guide-pos guide))
     (setf (eg-entry-type          entry) (eg-read-word guide))
-    (unless (or (eg-entry-short-p entry) (eg-entry-long-p entry))
-      (error "Not a valid entry type"))
-    (setf (eg-entry-size          entry) (eg-read-word guide))
-    (setf (eg-entry-line-count    entry) (eg-read-word guide))
-    (setf (eg-entry-has-see-also  entry) (eg-read-word guide))
-    (setf (eg-entry-parent-line   entry) (eg-read-word guide))
-    (setf (eg-entry-parent        entry) (eg-read-long guide))
-    (setf (eg-entry-parent-menu   entry) (eg-read-word guide))
-    (setf (eg-entry-parent-prompt entry) (eg-read-word guide))
-    (setf (eg-entry-previous      entry) (eg-read-long guide))
-    (setf (eg-entry-next          entry) (eg-read-long guide))
-    ;; If it's a short entry...
-    (when (eg-entry-short-p entry)
-      ;; ...load the offsets associated with each line.
-      (setf (eg-entry-offsets entry)
+    (if (not (or (eg-entry-short-p entry) (eg-entry-long-p entry)))
+        (error "%d is not a valid Norton Guide entry type" (eg-entry-type entry))
+      (setf (eg-entry-size          entry) (eg-read-word guide))
+      (setf (eg-entry-line-count    entry) (eg-read-word guide))
+      (setf (eg-entry-has-see-also  entry) (eg-read-word guide))
+      (setf (eg-entry-parent-line   entry) (eg-read-word guide))
+      (setf (eg-entry-parent        entry) (eg-read-long guide))
+      (setf (eg-entry-parent-menu   entry) (eg-read-word guide))
+      (setf (eg-entry-parent-prompt entry) (eg-read-word guide))
+      (setf (eg-entry-previous      entry) (eg-read-long guide))
+      (setf (eg-entry-next          entry) (eg-read-long guide))
+      ;; If it's a short entry...
+      (when (eg-entry-short-p entry)
+        ;; ...load the offsets associated with each line.
+        (setf (eg-entry-offsets entry)
+              (cl-loop for n from 1 to (eg-entry-line-count entry)
+                       do (eg-read-word guide) ; Skip unknown word.
+                       collect (eg-read-long guide))))
+      ;; Load the lines for the entry.
+      (setf (eg-entry-lines entry)
             (cl-loop for n from 1 to (eg-entry-line-count entry)
-                     do (eg-read-word guide) ; Skip unknown word.
-                     collect (eg-read-long guide))))
-    ;; Load the lines for the entry.
-    (setf (eg-entry-lines entry)
-          (cl-loop for n from 1 to (eg-entry-line-count entry)
-                   collect (eg-expand-string (eg-read-string-z guide eg-line-length))))
-    ;; If it's a long entry, and it has a see-also list...
-    (when (and (eg-entry-long-p entry) (eg-entry-has-see-also entry))
-      ;; ...load the see-alsos.
-      (setf (eg-entry-see-also entry) (eg-load-see-alsos guide)))
-    entry))
+                     collect (eg-expand-string (eg-read-string-z guide eg-line-length))))
+      ;; If it's a long entry, and it has a see-also list...
+      (when (and (eg-entry-long-p entry) (eg-entry-has-see-also entry))
+        ;; ...load the see-alsos.
+        (setf (eg-entry-see-also entry) (eg-load-see-alsos guide)))
+      entry)))
 
 (defun eg-entry-text (entry)
   "Get the text of ENTRY as a single string.
