@@ -123,7 +123,7 @@ LEN is the number of bytes to read."
   (with-current-buffer (eg-guide-buffer guide)
     (let* ((from (+ (point-min) (eg-guide-pos guide)))
            (to   (+ from len)))
-      (cl-incf (eg-guide-pos guide) len)
+      (eg-skip guide len)
       (buffer-substring-no-properties from to))))
 
 (defun eg-decrypt (n decrypt)
@@ -215,10 +215,10 @@ Any trailing NUL characters are removed."
 
 (cl-defun eg-read-string-z (guide len &optional (decrypt t))
   "Read string up to LEN characters, stopping if a nul is encountered."
-  (let ((pos (eg-guide-pos guide)))
-    (let ((s (eg-read-string guide len decrypt)))
-      (setf (eg-guide-pos guide) (+ 1 pos (length s)))
-      s)))
+  (let ((s (eg-save-excursion guide
+             (eg-read-string guide len decrypt))))
+    (eg-skip guide (1+ (length s)))
+    s))
 
 (defun eg-skip-entry (guide)
   "Skip an entry/menu in GUIDE."
@@ -334,6 +334,11 @@ Any trailing NUL characters are removed."
         ;; ...load the see-alsos.
         (setf (eg-entry-see-also entry) (eg-load-see-alsos guide)))
       entry)))
+
+(defun eg-load-entry (guide)
+  "Load the current entry from the guide."
+  (eg-save-excursion guide
+    (eg-read-entry guide)))
 
 (defun eg-entry-text (entry)
   "Get the text of ENTRY as a single string.
