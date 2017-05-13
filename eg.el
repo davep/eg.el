@@ -133,9 +133,7 @@ LEN is the number of bytes to read."
 
 (defun eg-decrypt (n decrypt)
   "Decrypt value N if DECRYPT is non-nil."
-  (if decrypt
-      (logxor n 26)
-    n))
+  (if decrypt (logxor n 26) n))
 
 (defun eg-make-signed-byte (n)
   "Ensure N is a signed byte."
@@ -177,21 +175,16 @@ If DECRYPT is non-nil, decrypt it."
           (hilo (eg-decrypt (aref long 2) decrypt))
           (hihi (eg-decrypt (aref long 3) decrypt)))
       (eg-make-signed-long
-       (+
-        (lsh
-         (+ (lsh hihi 8) hilo)
-         16)
-        (+ (lsh lohi 8) lolo))))))
+       (+ (lsh (+ (lsh hihi 8) hilo) 16) (+ (lsh lohi 8) lolo))))))
 
 (cl-defun eg-decrypt-string (s)
   "Decrypt string S."
-  (mapconcat
-   (lambda (c)
-     (make-string 1 c))
-   (mapcar
-    (lambda (c)
-      (eg-decrypt c t))
-    s) ""))
+  (mapconcat (lambda (c)
+               (make-string 1 c))
+             (mapcar
+              (lambda (c)
+                (eg-decrypt c t))
+              s) ""))
 
 (defun eg-rle-marker-p (c)
   "Does C look like an RLE marker?"
