@@ -99,6 +99,14 @@ help guard against corrupt guides.")
   "Skip BYTES bytes in GUIDE."
   (cl-incf (eg-guide-pos guide) bytes))
 
+(defun eg-goto (guide pos)
+  "Move read location in GUIDE to POS."
+  (setf (eg-guide-pos guide) pos))
+
+(defun eg-goto-first (guide)
+  "Go to the first entry in GUIDE."
+  (eg-goto guide (eg-guide-first-entry-pos guide)))
+
 (defun eg-read (guide len)
   "Read bytes from GUIDE.
 
