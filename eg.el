@@ -110,11 +110,12 @@ help guard against corrupt guides.")
 (defmacro eg-save-excursion (guide &rest body)
   "Read from GUIDE and evaluate BODY but leave location unmoved."
   (declare (indent 1))
-  `(let ((eg-save-pos (eg-guide-pos ,guide)))
-     (unwind-protect
-         (progn
-           ,@body)
-       (eg-goto ,guide eg-save-pos))))
+  (let ((saved-pos (cl-gensym "eg-saved-pos-")))
+    `(let ((,saved-pos (eg-guide-pos ,guide)))
+       (unwind-protect
+           (progn
+             ,@body)
+         (eg-goto ,guide ,saved-pos)))))
 
 (defun eg-read (guide len)
   "Read bytes from GUIDE.
