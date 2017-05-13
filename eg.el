@@ -288,8 +288,8 @@ Any trailing NUL characters are removed."
   "Read the entry at the current location in GUIDE."
   (let ((entry (make-eg-entry)))
     ;; Load the main "header" information for an entry.
-    (setf (eg-entry-offset        entry) (eg-guide-pos guide))
-    (setf (eg-entry-type          entry) (eg-read-word guide))
+    (setf (eg-entry-offset entry) (eg-guide-pos guide))
+    (setf (eg-entry-type   entry) (eg-read-word guide))
     (if (not (or (eg-entry-short-p entry) (eg-entry-long-p entry)))
         (error "%d is not a valid Norton Guide entry type" (eg-entry-type entry))
       (setf (eg-entry-size          entry) (eg-read-word guide))
