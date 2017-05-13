@@ -58,6 +58,7 @@ help guard against corrupt guides.")
   "Function that names a buffer for reading from a Norton guide file.")
 
 (cl-defstruct eg-guide
+  ;; Holds details about a guide.
   file
   buffer
   magic
@@ -69,12 +70,14 @@ help guard against corrupt guides.")
   (pos 0))
 
 (cl-defstruct eg-menu
+  ;; Holds details about a menu found in a guide.
   title
   prompt-count
   prompts
   offsets)
 
 (cl-defstruct eg-entry
+  ;; Holds the details of a guide entry.
   offset
   type
   size
@@ -91,6 +94,7 @@ help guard against corrupt guides.")
   see-also)
 
 (cl-defstruct eg-see-also
+  ;; Holds the details of the see-alsos for a guide entry.
   prompt-count
   prompts
   offsets)
