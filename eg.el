@@ -127,12 +127,13 @@ LEN is the number of bytes to read."
       (buffer-substring-no-properties from to))))
 
 (defun eg-decrypt (n decrypt)
-  "Decrypt value N."
+  "Decrypt value N if DECRYPT is non-nil."
   (if decrypt
       (logxor n 26)
     n))
 
 (defun eg-make-signed-byte (n)
+  "Ensure N is a signed byte."
   (if (zerop (logand n #x80))
       n
     (- n #x100)))
@@ -145,6 +146,7 @@ If DECRYPT is non-nil, decrypt it."
     (eg-make-signed-byte (eg-decrypt byte decrypt))))
 
 (defun eg-make-signed-word (n)
+  "Ensure N is a signed word."
   (if (zerop (logand n #x8000))
       n
     (- n #x10000)))
@@ -157,6 +159,7 @@ If DECRYPT is non-nil, decrypt it."
       (eg-make-signed-word (+ (lsh hi 8) lo)))))
 
 (defun eg-make-signed-long (n)
+  "Ensure N is a signed long."
   (if (zerop (logand n #x80000000))
       n
     (- n #x100000000)))
@@ -341,7 +344,7 @@ Any trailing NUL characters are removed."
       entry)))
 
 (defun eg-load-entry (guide)
-  "Load the current entry from the guide."
+  "Load the current entry from the GUIDE."
   (eg-save-excursion guide
     (eg-read-entry guide)))
 
@@ -400,6 +403,7 @@ New line markers are added at the end of each line."
       (eg-close guide))))
 
 (defun eg-dump-entry (entry)
+  "Testing helper. Dump data from ENTRY into a list."
   (list
    (cons 'offset (eg-entry-offset entry))
    (cons 'type (eg-entry-type entry))
