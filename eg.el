@@ -390,10 +390,13 @@ New line markers are added at the end of each line."
   "Testing helper."
   (let ((guide (eg-open "~/Google Drive/Norton Guides/acebase.ng")))
     (unwind-protect
-        (list
-         (eg-read-entry guide)
-         (eg-read-entry guide)
-         (eg-read-entry guide))
+        (progn
+          (eg-goto-first guide)
+          (eg-load-entry guide)
+          (eg-next-entry guide)
+          (eg-load-entry guide)
+          (eg-next-entry guide)
+          (eg-load-entry guide))
       (eg-close guide))))
 
 (defun eg-dump-entry (entry)
