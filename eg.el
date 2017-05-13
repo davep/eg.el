@@ -188,9 +188,7 @@ If DECRYPT is non-nil, decrypt it."
 
 (defun eg-rle-marker-p (c)
   "Does C look like an RLE marker?"
-  (or
-   (= c eg-rle-marker)
-   (= c (decode-char 'eight-bit eg-rle-marker))))
+  (= c eg-rle-marker))
 
 (defun eg-expand-string (s)
   "RLE-expand spaces in string S."
