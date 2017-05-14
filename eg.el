@@ -408,6 +408,18 @@ New line markers are added at the end of each line."
   "Close GUIDE."
   (kill-buffer (eg-guide-buffer guide)))
 
+(defmacro eg-with-guide (guide file &rest body)
+  "Open GUIDE from FILE and then evaluate BODY.
+
+`eg-with-guide' handles opening the Norton Guide file and also
+ensures that it is closed again after BODY has been evaluated."
+  (declare (indent 2))
+  `(let ((,guide (eg-open ,file)))
+     (unwind-protect
+         (progn
+           ,@body)
+       (eg-close ,guide))))
+
 (defun eg-test ()
   "Testing helper."
   (let ((guide (eg-open "~/Google Drive/Norton Guides/acebase.ng")))
