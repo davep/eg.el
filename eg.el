@@ -422,16 +422,13 @@ ensures that it is closed again after BODY has been evaluated."
 
 (defun eg-test ()
   "Testing helper."
-  (let ((guide (eg-open "~/Google Drive/Norton Guides/acebase.ng")))
-    (unwind-protect
-        (progn
-          (eg-goto-first guide)
-          (eg-load-entry guide)
-          (eg-next-entry guide)
-          (eg-load-entry guide)
-          (eg-next-entry guide)
-          (eg-load-entry guide))
-      (eg-close guide))))
+  (eg-with-guide guide "~/Google Drive/Norton Guides/acebase.ng"
+    (eg-goto-first guide)
+    (eg-load-entry guide)
+    (eg-next-entry guide)
+    (eg-load-entry guide)
+    (eg-next-entry guide)
+    (eg-load-entry guide)))
 
 (defun eg-dump-entry (entry)
   "Testing helper. Dump data from ENTRY into a list."
