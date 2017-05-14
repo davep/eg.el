@@ -186,12 +186,10 @@ If DECRYPT is non-nil, decrypt it."
 
 (cl-defun eg-decrypt-string (s)
   "Decrypt string S."
-  (mapconcat (lambda (c)
-               (make-string 1 c))
-             (mapcar
-              (lambda (c)
-                (eg-decrypt c t))
-              s) ""))
+  (mapconcat #'string (mapcar
+                       (lambda (c)
+                         (eg-decrypt c t))
+                       s) ""))
 
 (defun eg-rle-marker-p (c)
   "Does C look like an RLE marker?"
@@ -207,7 +205,7 @@ If DECRYPT is non-nil, decrypt it."
                                       (make-string c 32))
                   and do (setq expand nil)
                   else if (eg-rle-marker-p c) do (setq expand t)
-                  else collect (make-string 1 c))))
+                  else collect (string c))))
 
 (cl-defun eg-read-string (guide len &optional (decrypt t))
   "Read a string of LEN characters from GUIDE.
