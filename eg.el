@@ -121,11 +121,18 @@ help guard against corrupt guides.")
              ,@body)
          (eg-goto ,guide ,saved-pos)))))
 
+(defmacro eg-with-guide-buffer (guide &rest body)
+  "Make the buffer that contains the GUIDE the `current-buffer' then
+evaluate BODY."
+  (declare (indent 1))
+  `(with-current-buffer (eg-guide-buffer ,guide)
+     ,@body))
+
 (defun eg-read (guide len)
   "Read bytes from GUIDE.
 
 LEN is the number of bytes to read."
-  (with-current-buffer (eg-guide-buffer guide)
+  (eg-with-guide-buffer guide
     (let* ((from (+ (point-min) (eg-guide-pos guide)))
            (to   (+ from len)))
       (eg-skip guide len)
@@ -378,7 +385,7 @@ New line markers are added at the end of each line."
 (defun eg-eof-p (guide)
   "Do we appear to be at the end of GUIDE?"
   (or
-   (with-current-buffer (eg-guide-buffer guide)
+   (eg-with-guide-buffer guide
      (>= (+ (point-min) (eg-guide-pos guide)) (point-max)))
    (not (or (eg-entry-looking-at-short-p guide)
             (eg-entry-looking-at-long-p guide)))))
