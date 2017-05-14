@@ -138,7 +138,7 @@ LEN is the number of bytes to read."
       (eg-skip guide len)
       (buffer-substring-no-properties from to))))
 
-(defun eg-decrypt (n decrypt)
+(cl-defun eg-decrypt (n &optional (decrypt t))
   "Decrypt value N if DECRYPT is non-nil."
   (if decrypt (logxor n 26) n))
 
