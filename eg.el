@@ -186,10 +186,7 @@ If DECRYPT is non-nil, decrypt it."
 
 (cl-defun eg-decrypt-string (s)
   "Decrypt string S."
-  (mapconcat #'string (mapcar
-                       (lambda (c)
-                         (eg-decrypt c t))
-                       s) ""))
+  (mapconcat #'string (mapcar #'eg-decrypt s) ""))
 
 (defun eg-rle-marker-p (c)
   "Does C look like an RLE marker?"
