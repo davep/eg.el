@@ -133,8 +133,8 @@ evaluate BODY."
 
 LEN is the number of bytes to read."
   (eg-with-guide-buffer guide
-    (let* ((from (+ (point-min) (eg-guide-pos guide)))
-           (to   (+ from len)))
+    (let* ((from (min (+ (point-min) (eg-guide-pos guide)) (point-max)))
+           (to   (min (+ from len) (point-max))))
       (eg-skip guide len)
       (buffer-substring-no-properties from to))))
 
