@@ -295,6 +295,15 @@ Any trailing NUL characters are removed."
   "Is ENTRY a long entry?"
   (= (eg-entry-type entry) eg-entry-long))
 
+(defun eg-entry-type-description (entry)
+  "Describe the type of ENTRY."
+  (cond ((eg-entry-short-p entry)
+         "Short")
+        ((eg-entry-long-p entry)
+         "Long")
+        (t
+         "Unknown")))
+
 (defun eg-load-see-alsos (guide)
   "Load a list of see also entries from current position in GUIDE."
   (let ((see-also (make-eg-see-also)))
