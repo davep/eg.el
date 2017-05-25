@@ -291,11 +291,13 @@ Any trailing NUL characters are removed."
 
 (defun eg-entry-short-p (entry)
   "Is ENTRY a short entry?"
-  (= (eg-entry-type entry) eg-entry-short))
+  (when entry
+    (= (eg-entry-type entry) eg-entry-short)))
 
 (defun eg-entry-long-p (entry)
   "Is ENTRY a long entry?"
-  (= (eg-entry-type entry) eg-entry-long))
+  (when entry
+    (= (eg-entry-type entry) eg-entry-long)))
 
 (defun eg-entry-type-description (entry)
   "Describe the type of ENTRY."
@@ -324,8 +326,7 @@ Any trailing NUL characters are removed."
     ;; Load the main "header" information for an entry.
     (setf (eg-entry-offset entry) (eg-guide-pos guide))
     (setf (eg-entry-type   entry) (eg-read-word guide))
-    (if (not (or (eg-entry-short-p entry) (eg-entry-long-p entry)))
-        (error "%d is not a valid Norton Guide entry type" (eg-entry-type entry))
+    (when (or (eg-entry-short-p entry) (eg-entry-long-p entry))
       (setf (eg-entry-size          entry) (eg-read-word guide))
       (setf (eg-entry-line-count    entry) (eg-read-word guide))
       (setf (eg-entry-has-see-also  entry) (eg-read-word guide))
