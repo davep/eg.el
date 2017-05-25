@@ -223,12 +223,14 @@ Any trailing NUL characters are removed."
 
 (defun eg-skip-entry (guide)
   "Skip an entry/menu in GUIDE."
-  (eg-skip guide (+ 22 (eg-read-word guide))))
+  (when (not (eg-eof-p guide))
+    (eg-skip guide (+ 22 (eg-read-word guide)))))
 
 (defun eg-next-entry (guide)
   "Move GUIDE location to the next entry."
-  (eg-read-word guide)
-  (eg-skip-entry guide))
+  (when (not (eg-eof-p guide))
+    (eg-read-word guide)
+    (eg-skip-entry guide)))
 
 (defun eg-read-header (guide)
   "Read the header of GUIDE."
