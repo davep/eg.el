@@ -461,6 +461,13 @@ ensures that it is closed again after BODY has been evaluated."
     (eg-next-entry guide)
     (eg-load-entry guide)))
 
+(defun eg-test-guide-to-text ()
+  (eg-with-guide guide "~/Google Drive/Norton Guides/wwwsetup.ng"
+  (eg-goto-first guide)
+  (while (not (eg-eof-p guide))
+    (insert (eg-entry-text (eg-load-entry guide)))
+    (eg-next-entry guide))))
+
 (defun eg-dump-entry (entry)
   "Testing helper. Dump data from ENTRY into a list."
   (list
