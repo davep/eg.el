@@ -228,7 +228,7 @@ Any trailing NUL characters are removed."
 
 (defun eg-next-entry (guide)
   "Move GUIDE location to the next entry."
-  (when (not (eg-eof-p guide))
+  (unless (eg-eof-p guide)
     (eg-read-word guide)
     (eg-skip-entry guide)))
 
