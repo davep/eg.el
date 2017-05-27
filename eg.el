@@ -468,24 +468,6 @@ ensures that it is closed again after BODY has been evaluated."
     (insert (eg-entry-text (eg-load-entry guide)))
     (eg-next-entry guide))))
 
-(defun eg-dump-entry (entry)
-  "Testing helper. Dump data from ENTRY into a list."
-  (list
-   (cons 'offset (eg-entry-offset entry))
-   (cons 'type (eg-entry-type entry))
-   (cons 'size(eg-entry-size entry))
-   (cons 'count (eg-entry-line-count entry))
-   (cons 'see-also (eg-entry-has-see-also entry))
-   (cons 'parent-line (eg-entry-parent-line entry))
-   (cons 'parent (eg-entry-parent entry))
-   (cons 'parent-menu (eg-entry-parent-menu entry))
-   (cons 'parent-prompt (eg-entry-parent-prompt entry))
-   (cons 'previous (eg-entry-previous entry))
-   (cons 'next (eg-entry-next entry))
-   (cons 'offsets (eg-entry-offsets entry))
-   (cons 'lines (eg-entry-lines entry))
-   (cons 'see-also (eg-entry-see-also entry))))
-
 (provide 'eg)
 
 ;;; eg.el ends here
