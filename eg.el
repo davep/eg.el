@@ -558,27 +558,26 @@ ensures that it is closed again after BODY has been evaluated."
   (let ((buffer-read-only nil)
         (entry eg--current-entry))
     (setf (buffer-string) "")
-    (when t;(eg-entry-long-p entry)
-      (if (eg-entry-has-previous-p entry)
-          (insert-text-button "[<< Prev]"
-                              'action (lambda (_)
-                                        (eg--view-entry
-                                         (eg-entry-previous entry))))
-        (insert "[<< Prev]"))
-      (insert " ")
-      (if (eg-entry-has-parent-p entry)
-          (insert-text-button "[^^ Up ^^]"
-                              'action (lambda (_)
-                                        (eg--view-entry
-                                         (eg-entry-parent entry))))
-        (insert "[^^ Up ^^]"))
-      (insert " ")
-      (if (eg-entry-has-next-p entry)
-          (insert-text-button "[Next >>]"
-                              'action (lambda (_)
-                                        (eg--view-entry
-                                         (eg-entry-next entry))))
-        (insert "[Next >>]")))
+    (if (eg-entry-has-previous-p entry)
+        (insert-text-button "[<< Prev]"
+                            'action (lambda (_)
+                                      (eg--view-entry
+                                       (eg-entry-previous entry))))
+      (insert "[<< Prev]"))
+    (insert " ")
+    (if (eg-entry-has-parent-p entry)
+        (insert-text-button "[^^ Up ^^]"
+                            'action (lambda (_)
+                                      (eg--view-entry
+                                       (eg-entry-parent entry))))
+      (insert "[^^ Up ^^]"))
+    (insert " ")
+    (if (eg-entry-has-next-p entry)
+        (insert-text-button "[Next >>]"
+                            'action (lambda (_)
+                                      (eg--view-entry
+                                       (eg-entry-next entry))))
+      (insert "[Next >>]"))
     (insert "\n\n")
     (save-excursion
       (cl-loop for line in (eg-entry-lines entry) do (insert line "\n")))
