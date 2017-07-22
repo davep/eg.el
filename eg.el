@@ -558,6 +558,13 @@ ensures that it is closed again after BODY has been evaluated."
                                          (eg-entry-previous eg--current-entry))))
         (insert "[<< Prev]"))
       (insert " ")
+      (if (eg-entry-has-parent-p eg--current-entry)
+          (insert-text-button "[^^ Up ^^]"
+                              'action (lambda (_)
+                                        (eg--view-entry
+                                         (eg-entry-parent eg--current-entry))))
+        (insert "[^^ Up ^^]"))
+      (insert " ")
       (if (eg-entry-has-next-p entry)
           (insert-text-button "[Next >>]"
                               'action (lambda (_)
