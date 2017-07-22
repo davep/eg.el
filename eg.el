@@ -353,7 +353,7 @@ Any trailing NUL characters are removed."
     (when (or (eg-entry-short-p entry) (eg-entry-long-p entry))
       (setf (eg-entry-size          entry) (eg-read-word guide))
       (setf (eg-entry-line-count    entry) (eg-read-word guide))
-      (setf (eg-entry-has-see-also  entry) (eg-read-word guide))
+      (setf (eg-entry-has-see-also  entry) (not (zerop (eg-read-word guide))))
       (setf (eg-entry-parent-line   entry) (eg-read-word guide))
       (setf (eg-entry-parent        entry) (eg-read-long guide))
       (setf (eg-entry-parent-menu   entry) (eg-read-word guide))
