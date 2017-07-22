@@ -481,6 +481,7 @@ ensures that it is closed again after BODY has been evaluated."
     (define-key map ">"       #'eg-goto-next-entry-maybe)
     (define-key map "<"       #'eg-goto-prev-entry-maybe)
     (define-key map "^"       #'eg-goto-parent-entry-maybe)
+    (define-key map "m"       #'eg-view-menu)
     (define-key map "q"       #'eg-quit)
     (define-key map "?"       #'describe-mode)
     (setq eg-mode-map map)))
@@ -648,6 +649,23 @@ call to find the position to jump to."
     (eg--decorate-buffer)
     (eg--add-top-nav)
     (eg--add-bottom-nav)))
+
+(defun eg-view-menu ()
+  "View the current guide's menu."
+  (interactive)
+  (let ((buffer-read-only nil))
+    (setf (buffer-string) "")
+    (save-excursion
+      (cl-loop for menu in (eg-guide-menus eg--current-guide)
+               do
+               (insert (eg-menu-title menu) "\n")
+               (cl-loop for prompt in (eg-menu-prompts menu)
+                        and link in (eg-menu-offsets menu)
+                        do (insert "\t")
+                        (insert-text-button
+                         prompt 'action `(lambda (_)
+                                           (eg--view-entry ,link)))
+                        (insert "\n"))))))
 
 (provide 'eg)
 
