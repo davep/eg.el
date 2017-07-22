@@ -122,8 +122,7 @@ help guard against corrupt guides.")
          (eg-goto ,guide ,saved-pos)))))
 
 (defmacro eg-with-guide-buffer (guide &rest body)
-  "Make the buffer that contains the GUIDE the `current-buffer' then
-evaluate BODY."
+  "Make GUIDE the current buffer then evaluate BODY."
   (declare (indent 1))
   `(with-current-buffer (eg-guide-buffer ,guide)
      ,@body))
