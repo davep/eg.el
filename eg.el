@@ -554,6 +554,11 @@ ensures that it is closed again after BODY has been evaluated."
   (eg-view-current-entry))
 
 (defun eg--insert-nav (button test pos)
+  "Insert a navigation button.
+
+BUTTON is the text. TEST is the function used to test if we
+should make the button a live link. POS is the function we should
+call to find the position to jump to."
   (if (funcall test eg--current-entry)
       (insert-text-button button
                           'action (lambda (_)
