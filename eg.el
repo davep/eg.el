@@ -539,7 +539,7 @@ ensures that it is closed again after BODY has been evaluated."
                  do (make-text-button
                      (point-at-bol)
                      (point-at-eol)
-                     'action (lambda (_) (eg--view-entry link)))
+                     'action `(lambda (_) (eg--view-entry ,link)))
                  (forward-line))))))
 
 (provide 'eg)
