@@ -502,7 +502,11 @@ ensures that it is closed again after BODY has been evaluated."
 
 ;;;###autoload
 (defun eg-mode ()
-  "Major mode for viewing Norton Guide database files."
+  "Major mode for viewing Norton Guide database files.
+
+The key bindings for `eg-mode' are:
+
+\\{eg-mode-map}"
   (use-local-map eg-mode-map)
   (setq major-mode       'eg-mode-map
         mode-name        "Expert Guide"
