@@ -480,6 +480,7 @@ ensures that it is closed again after BODY has been evaluated."
     (define-key map [backtab] #'eg-jump-prev-link)
     (define-key map ">"       #'eg-goto-next-entry-maybe)
     (define-key map "<"       #'eg-goto-prev-entry-maybe)
+    (define-key map "^"       #'eg-goto-parent-entry-maybe)
     (define-key map "q"       #'eg-quit)
     (define-key map "?"       #'describe-mode)
     (setq eg-mode-map map)))
@@ -503,7 +504,7 @@ ensures that it is closed again after BODY has been evaluated."
       (eg-mode)
       (set (make-local-variable 'eg--current-guide) (eg-open file))
       (set (make-local-variable 'eg--current-entry) nil)
-      (eg-view-current-entry))))
+      (eg--view-entry))))
 
 (defun eg-jump-next-link ()
   "Jump to the next link in the buffer."
@@ -518,6 +519,12 @@ ensures that it is closed again after BODY has been evaluated."
   (unless (previous-button (point))
     (setf (point) (point-max)))
   (backward-button 1))
+
+(defun eg-goto-parent-entry-maybe ()
+  "Load and view the parent entry, if there is one."
+  (interactive)
+  (when (eg-entry-has-parent-p eg--current-entry)
+    (eg--view-entry (eg-entry-parent eg--current-entry))))
 
 (defun eg-goto-next-entry-maybe ()
   "Load and view the next entry, if there is one."
@@ -538,9 +545,10 @@ ensures that it is closed again after BODY has been evaluated."
   (eg-close eg--current-guide)
   (kill-buffer))
 
-(defun eg--view-entry (offset)
+(defun eg--view-entry (&optional offset)
   "View the entry at OFFSET."
-  (eg-goto eg--current-guide offset)
+  (when offset
+    (eg-goto eg--current-guide offset))
   (setq eg--current-entry
         (eg-load-entry eg--current-guide))
   (eg-view-current-entry))
@@ -548,28 +556,28 @@ ensures that it is closed again after BODY has been evaluated."
 (defun eg-view-current-entry ()
   "View the current entry."
   (let ((buffer-read-only nil)
-        (entry (eg-load-entry eg--current-guide)))
+        (entry eg--current-entry))
     (setf (buffer-string) "")
-    (when (eg-entry-long-p eg--current-entry)
+    (when (eg-entry-long-p entry)
       (if (eg-entry-has-previous-p entry)
           (insert-text-button "[<< Prev]"
                               'action (lambda (_)
                                         (eg--view-entry
-                                         (eg-entry-previous eg--current-entry))))
+                                         (eg-entry-previous entry))))
         (insert "[<< Prev]"))
       (insert " ")
-      (if (eg-entry-has-parent-p eg--current-entry)
+      (if (eg-entry-has-parent-p entry)
           (insert-text-button "[^^ Up ^^]"
                               'action (lambda (_)
                                         (eg--view-entry
-                                         (eg-entry-parent eg--current-entry))))
+                                         (eg-entry-parent entry))))
         (insert "[^^ Up ^^]"))
       (insert " ")
       (if (eg-entry-has-next-p entry)
           (insert-text-button "[Next >>]"
                               'action (lambda (_)
                                         (eg--view-entry
-                                         (eg-entry-next eg--current-entry))))
+                                         (eg-entry-next entry))))
         (insert "[Next >>]")))
     (insert "\n\n")
     (save-excursion
