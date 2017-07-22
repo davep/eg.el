@@ -488,23 +488,6 @@ ensures that it is closed again after BODY has been evaluated."
                                (eg-view-current-entry)))
                  (forward-line))))))
 
-(defun eg-test ()
-  "Testing helper."
-  (eg-with-guide guide "~/Google Drive/Norton Guides/acebase.ng"
-    (eg-goto-first guide)
-    (eg-load-entry guide)
-    (eg-next-entry guide)
-    (eg-load-entry guide)
-    (eg-next-entry guide)
-    (eg-load-entry guide)))
-
-(defun eg-test-guide-to-text ()
-  (eg-with-guide guide "~/Google Drive/Norton Guides/wwwsetup.ng"
-  (eg-goto-first guide)
-  (while (not (eg-eof-p guide))
-    (insert (eg-entry-text (eg-load-entry guide)))
-    (eg-next-entry guide))))
-
 (provide 'eg)
 
 ;;; eg.el ends here
