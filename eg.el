@@ -577,7 +577,8 @@ call to find the position to jump to."
                and see-link in (eg-see-also-offsets (eg-entry-see-also entry))
                do (insert-button see
                                  'action `(lambda (_)
-                                            (eg--view-entry ,see-link)))))))
+                                            (eg--view-entry ,see-link)))
+               (insert " ")))))
 
 (defun eg-view-current-entry ()
   "View the current entry."
