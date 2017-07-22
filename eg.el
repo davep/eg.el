@@ -1,4 +1,4 @@
-;;; eg.el --- Norton Guide reader for GNU Emacs
+;;; eg.el --- Norton Guide reader for GNU Emacs -*- lexical-binding: t -*-
 ;; Copyright 2017 by Dave Pearson <davep@davep.org>
 
 ;; eg.el is free software distributed under the terms of the GNU General
@@ -450,6 +450,43 @@ ensures that it is closed again after BODY has been evaluated."
          (progn
            ,@body)
        (eg-close ,guide))))
+
+
+(defvar eg--current-guide nil
+  "The current guide being viewed in an EG buffer.")
+
+(defvar eg--current-entry nil
+  "The entry currently being viewed in an EG buffer.")
+
+;;;###autoload
+(defun eg (file)
+  "View FILE as a Norton Guide database."
+  (interactive "fGuide: ")
+  (let ((buffer (get-buffer-create (format "EG: %s" file))))
+    (switch-to-buffer buffer)
+    (with-current-buffer buffer
+      (set (make-local-variable 'eg--current-guide) (eg-open file))
+      (set (make-local-variable 'eg--current-entry) nil)
+      (eg-view-current-entry))))
+
+(defun eg-view-current-entry ()
+  "View the current entry."
+  (let ((entry (eg-load-entry eg--current-guide)))
+    (setf (buffer-string) "")
+    (save-excursion
+      (cl-loop for line in (eg-entry-lines entry) do (insert line "\n")))
+    (when (eg-entry-short-p entry)
+      (save-excursion
+        (cl-loop for link in (eg-entry-offsets entry)
+                 do (make-text-button
+                     (point-at-bol)
+                     (point-at-eol)
+                     'action (lambda (_)
+                               (eg-goto eg--current-guide link)
+                               (setq eg--current-entry
+                                     (eg-load-entry eg--current-guide))
+                               (eg-view-current-entry)))
+                 (forward-line))))))
 
 (defun eg-test ()
   "Testing helper."
