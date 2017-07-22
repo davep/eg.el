@@ -417,6 +417,10 @@ New line markers are added at the end of each line."
   "Does ENTRY appear to have a previous entry?"
   (> (eg-entry-previous entry) -1))
 
+(defun eg-entry-has-next-p (entry)
+  "Does ENTRY appear to have a next entry?"
+  (> (eg-entry-next entry) -1))
+
 (defun eg-eof-p (guide)
   "Do we appear to be at the end of GUIDE?"
   (or
