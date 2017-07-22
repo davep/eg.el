@@ -500,12 +500,14 @@ ensures that it is closed again after BODY has been evaluated."
       (eg-view-current-entry))))
 
 (defun eg-jump-next-link ()
+  "Jump to the next link in the buffer."
   (interactive)
   (unless (next-button (point))
     (setf (point) (point-min)))
   (forward-button 1))
 
 (defun eg-jump-prev-link ()
+  "Jump to the previous link in the buffer."
   (interactive)
   (unless (previous-button (point))
     (setf (point) (point-max)))
