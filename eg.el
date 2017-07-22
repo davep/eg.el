@@ -509,7 +509,7 @@ The key bindings for `eg-mode' are:
 \\{eg-mode-map}"
   (kill-all-local-variables)
   (use-local-map eg-mode-map)
-  (setq major-mode       'eg-mode-map
+  (setq major-mode       'eg-mode
         mode-name        "Expert Guide"
         buffer-read-only t
         truncate-lines   t)
