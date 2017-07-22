@@ -511,7 +511,8 @@ The key bindings for `eg-mode' are:
   (setq major-mode       'eg-mode-map
         mode-name        "Expert Guide"
         buffer-read-only t
-        truncate-lines   t))
+        truncate-lines   t)
+  (buffer-disable-undo (current-buffer)))
 
 ;;;###autoload
 (defun eg (file)
