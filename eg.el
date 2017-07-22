@@ -472,6 +472,7 @@ ensures that it is closed again after BODY has been evaluated."
 (unless eg-mode-map
   (let ((map (make-sparse-keymap)))
     (suppress-keymap map t)
+    (define-key map [tab] #'eg-jump-next-link)
     (define-key map "q" #'eg-quit)
     (define-key map "?" #'describe-mode)
     (setq eg-mode-map map)))
@@ -496,6 +497,12 @@ ensures that it is closed again after BODY has been evaluated."
       (set (make-local-variable 'eg--current-guide) (eg-open file))
       (set (make-local-variable 'eg--current-entry) nil)
       (eg-view-current-entry))))
+
+(defun eg-jump-next-link ()
+  (interactive)
+  (unless (next-button (point))
+    (setf (point) (point-min)))
+  (forward-button 1))
 
 ;;;###autoload
 (defun eg-quit ()
