@@ -475,6 +475,7 @@ ensures that it is closed again after BODY has been evaluated."
     (define-key map [tab]     #'eg-jump-next-link)
     (define-key map [backtab] #'eg-jump-prev-link)
     (define-key map ">"       #'eg-goto-next-entry-maybe)
+    (define-key map "<"       #'eg-goto-prev-entry-maybe)
     (define-key map "q"       #'eg-quit)
     (define-key map "?"       #'describe-mode)
     (setq eg-mode-map map)))
@@ -519,6 +520,12 @@ ensures that it is closed again after BODY has been evaluated."
   (interactive)
   (when (eg-entry-has-next-p eg--current-entry)
     (eg--view-entry (eg-entry-next eg--current-entry))))
+
+(defun eg-goto-prev-entry-maybe ()
+  "Load and view the previous entry, if there is one."
+  (interactive)
+  (when (eg-entry-has-previous-p eg--current-entry)
+    (eg--view-entry (eg-entry-previous eg--current-entry))))
 
 ;;;###autoload
 (defun eg-quit ()
