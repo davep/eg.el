@@ -496,6 +496,13 @@ ensures that it is closed again after BODY has been evaluated."
   (eg-close eg--current-guide)
   (kill-buffer))
 
+(defun eg--view-entry (offset)
+  "View the entry at OFFSET."
+  (eg-goto eg--current-guide offset)
+  (setq eg--current-entry
+        (eg-load-entry eg--current-guide))
+  (eg-view-current-entry))
+
 (defun eg-view-current-entry ()
   "View the current entry."
   (let ((buffer-read-only nil)
@@ -509,11 +516,7 @@ ensures that it is closed again after BODY has been evaluated."
                  do (make-text-button
                      (point-at-bol)
                      (point-at-eol)
-                     'action (lambda (_)
-                               (eg-goto eg--current-guide link)
-                               (setq eg--current-entry
-                                     (eg-load-entry eg--current-guide))
-                               (eg-view-current-entry)))
+                     'action (lambda (_) (eg--view-entry link)))
                  (forward-line))))))
 
 (provide 'eg)
