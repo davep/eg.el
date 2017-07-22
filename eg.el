@@ -610,9 +610,9 @@ call to find the position to jump to."
               ((string= token "b")
                (delete-char 1))
               ((string= token "c")
-               (delete-char 3)
-               ;; TODO: Insert the actual character.
-               (insert "."))
+               (let ((char (buffer-substring-no-properties (point) (+ (point) 2))))
+                 (delete-char 3)
+                 (insert (make-string 1 (string-to-number char 16)))))
               ((string= token "n")
                (delete-char 1))
               ((string= token "r")
