@@ -623,20 +623,28 @@ call to find the position to jump to."
                ;; GNDN
                ))))))
 
+(defun eg--insert-entry-text ()
+  "Insert the text of the current entry."
+  (save-excursion
+    (cl-loop for line in (eg-entry-lines eg--current-entry) do (insert line "\n"))))
+
+(defun eg--linkify-entry-text ()
+  "Add links to the current buffer text."
+  (when (eg-entry-short-p eg--current-entry)
+    (save-excursion
+      (cl-loop for link in (eg-entry-offsets eg--current-entry)
+               do (make-text-button
+                   (point-at-bol)
+                   (point-at-eol)
+                   'action `(lambda (_) (eg--view-entry ,link)))
+               (forward-line)))))
+
 (defun eg-view-current-entry ()
   "View the current entry."
   (let ((buffer-read-only nil))
     (setf (buffer-string) "")
-    (save-excursion
-      (cl-loop for line in (eg-entry-lines eg--current-entry) do (insert line "\n")))
-    (when (eg-entry-short-p eg--current-entry)
-      (save-excursion
-        (cl-loop for link in (eg-entry-offsets eg--current-entry)
-                 do (make-text-button
-                     (point-at-bol)
-                     (point-at-eol)
-                     'action `(lambda (_) (eg--view-entry ,link)))
-                 (forward-line))))
+    (eg--insert-entry-text)
+    (eg--linkify-entry-text)
     (eg--decorate-buffer)
     (eg--add-top-nav)
     (eg--add-bottom-nav)))
