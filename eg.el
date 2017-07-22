@@ -458,6 +458,25 @@ ensures that it is closed again after BODY has been evaluated."
 (defvar eg--current-entry nil
   "The entry currently being viewed in an EG buffer.")
 
+(defvar eg-mode-map nil
+  "Local keymap for Expert Guide.")
+
+(unless eg-mode-map
+  (let ((map (make-sparse-keymap)))
+    (suppress-keymap map t)
+    (define-key map "q" #'eg-quit)
+    (define-key map "?" #'describe-mode)
+    (setq eg-mode-map map)))
+
+;;;###autoload
+(defun eg-mode ()
+  "Major mode for viewing Norton Guide database files."
+  (use-local-map eg-mode-map)
+  (setq major-mode       'eg-mode-map
+        mode-name        "Expert Guide"
+        buffer-read-only t
+        truncate-lines   t))
+
 ;;;###autoload
 (defun eg (file)
   "View FILE as a Norton Guide database."
@@ -465,13 +484,22 @@ ensures that it is closed again after BODY has been evaluated."
   (let ((buffer (get-buffer-create (format "EG: %s" file))))
     (switch-to-buffer buffer)
     (with-current-buffer buffer
+      (eg-mode)
       (set (make-local-variable 'eg--current-guide) (eg-open file))
       (set (make-local-variable 'eg--current-entry) nil)
       (eg-view-current-entry))))
 
+;;;###autoload
+(defun eg-quit ()
+  "Quit the EG buffer."
+  (interactive)
+  (eg-close eg--current-guide)
+  (kill-buffer))
+
 (defun eg-view-current-entry ()
   "View the current entry."
-  (let ((entry (eg-load-entry eg--current-guide)))
+  (let ((buffer-read-only nil)
+        (entry (eg-load-entry eg--current-guide)))
     (setf (buffer-string) "")
     (save-excursion
       (cl-loop for line in (eg-entry-lines entry) do (insert line "\n")))
