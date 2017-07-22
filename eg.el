@@ -415,15 +415,15 @@ New line markers are added at the end of each line."
 
 (defun eg-entry-has-parent-p (entry)
   "Does ENTRY appear to have a parent entry?"
-  (> (eg-entry-parent entry) -1))
+  (> (eg-entry-parent entry) 0))
 
 (defun eg-entry-has-previous-p (entry)
   "Does ENTRY appear to have a previous entry?"
-  (> (eg-entry-previous entry) -1))
+  (> (eg-entry-previous entry) 0))
 
 (defun eg-entry-has-next-p (entry)
   "Does ENTRY appear to have a next entry?"
-  (> (eg-entry-next entry) -1))
+  (> (eg-entry-next entry) 0))
 
 (defun eg-eof-p (guide)
   "Do we appear to be at the end of GUIDE?"
@@ -558,7 +558,7 @@ ensures that it is closed again after BODY has been evaluated."
   (let ((buffer-read-only nil)
         (entry eg--current-entry))
     (setf (buffer-string) "")
-    (when (eg-entry-long-p entry)
+    (when t;(eg-entry-long-p entry)
       (if (eg-entry-has-previous-p entry)
           (insert-text-button "[<< Prev]"
                               'action (lambda (_)
