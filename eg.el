@@ -580,16 +580,53 @@ call to find the position to jump to."
                                             (eg--view-entry ,see-link)))
                (insert " ")))))
 
-(defun eg-view-current-entry ()
-  "View the current entry."
-  (let ((buffer-read-only nil))
-    (setf (buffer-string) "")
+(defun eg--add-top-nav ()
+  "Add navigation links to the top of the buffer."
+  (save-excursion
+    (setf (point) (point-min))
     (eg--insert-nav "[<< Prev]" #'eg-entry-has-previous-p #'eg-entry-previous)
     (insert " ")
     (eg--insert-nav "[^^ Up ^^]" #'eg-entry-has-parent-p #'eg-entry-parent)
     (insert " ")
     (eg--insert-nav "[Next >>]" #'eg-entry-has-next-p #'eg-entry-next)
-    (insert "\n\n")
+    (insert "\n\n")))
+
+(defun eg--add-bottom-nav ()
+  "Add navigation links to the bottom of the buffer."
+  (save-excursion
+    (setf (point) (point-max))
+    (when (eg-entry-long-p eg--current-entry)
+      (eg--insert-see-alsos eg--current-entry))))
+
+(defun eg--decorate-buffer ()
+  "Parse tokens, etc, to make the buffer more readable."
+  (save-excursion
+    (setf (point) (point-min))
+    (while (search-forward "^" nil t)
+      (let ((token (downcase (buffer-substring-no-properties (point) (1+ (point))))))
+        (delete-char -1)
+        (cond ((string= token "a")
+               (delete-char 3))
+              ((string= token "b")
+               (delete-char 1))
+              ((string= token "c")
+               (delete-char 3)
+               ;; TODO: Insert the actual character.
+               (insert "."))
+              ((string= token "n")
+               (delete-char 1))
+              ((string= token "r")
+               (delete-char 1))
+              ((string= token "u")
+               (delete-char 1))
+              ((string= token "^")
+               ;; GNDN
+               ))))))
+
+(defun eg-view-current-entry ()
+  "View the current entry."
+  (let ((buffer-read-only nil))
+    (setf (buffer-string) "")
     (save-excursion
       (cl-loop for line in (eg-entry-lines eg--current-entry) do (insert line "\n")))
     (when (eg-entry-short-p eg--current-entry)
@@ -600,8 +637,9 @@ call to find the position to jump to."
                      (point-at-eol)
                      'action `(lambda (_) (eg--view-entry ,link)))
                  (forward-line))))
-    (when (eg-entry-long-p eg--current-entry)
-      (eg--insert-see-alsos eg--current-entry))))
+    (eg--decorate-buffer)
+    (eg--add-top-nav)
+    (eg--add-bottom-nav)))
 
 (provide 'eg)
 
