@@ -566,6 +566,19 @@ call to find the position to jump to."
                                      (funcall pos eg--current-entry))))
     (insert button)))
 
+(defun eg--insert-see-alsos (entry)
+  "Insert any see-also links for ENTRY."
+  (when (eg-entry-has-see-also entry)
+    (save-excursion
+      (setf (point) (point-max))
+      (insert (make-string fill-column ?-) "\n")
+      (insert "See also: ")
+      (cl-loop for see in (eg-see-also-prompts (eg-entry-see-also entry))
+               and see-link in (eg-see-also-offsets (eg-entry-see-also entry))
+               do (insert-button see
+                                 'action `(lambda (_)
+                                            (eg--view-entry ,see-link)))))))
+
 (defun eg-view-current-entry ()
   "View the current entry."
   (let ((buffer-read-only nil))
@@ -585,7 +598,9 @@ call to find the position to jump to."
                      (point-at-bol)
                      (point-at-eol)
                      'action `(lambda (_) (eg--view-entry ,link)))
-                 (forward-line))))))
+                 (forward-line))))
+    (when (eg-entry-long-p eg--current-entry)
+      (eg--insert-see-alsos eg--current-entry))))
 
 (provide 'eg)
 
