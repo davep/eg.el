@@ -507,6 +507,7 @@ ensures that it is closed again after BODY has been evaluated."
 The key bindings for `eg-mode' are:
 
 \\{eg-mode-map}"
+  (kill-all-local-variables)
   (use-local-map eg-mode-map)
   (setq major-mode       'eg-mode-map
         mode-name        "Expert Guide"
