@@ -472,9 +472,10 @@ ensures that it is closed again after BODY has been evaluated."
 (unless eg-mode-map
   (let ((map (make-sparse-keymap)))
     (suppress-keymap map t)
-    (define-key map [tab] #'eg-jump-next-link)
-    (define-key map "q" #'eg-quit)
-    (define-key map "?" #'describe-mode)
+    (define-key map [tab]     #'eg-jump-next-link)
+    (define-key map [backtab] #'eg-jump-prev-link)
+    (define-key map "q"       #'eg-quit)
+    (define-key map "?"       #'describe-mode)
     (setq eg-mode-map map)))
 
 ;;;###autoload
@@ -503,6 +504,12 @@ ensures that it is closed again after BODY has been evaluated."
   (unless (next-button (point))
     (setf (point) (point-min)))
   (forward-button 1))
+
+(defun eg-jump-prev-link ()
+  (interactive)
+  (unless (previous-button (point))
+    (setf (point) (point-max)))
+  (backward-button 1))
 
 ;;;###autoload
 (defun eg-quit ()
