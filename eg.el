@@ -553,37 +553,29 @@ ensures that it is closed again after BODY has been evaluated."
         (eg-load-entry eg--current-guide))
   (eg-view-current-entry))
 
+(defun eg--insert-nav (button test pos)
+  (if (funcall test eg--current-entry)
+      (insert-text-button button
+                          'action (lambda (_)
+                                    (eg--view-entry
+                                     (funcall pos eg--current-entry))))
+    (insert button)))
+
 (defun eg-view-current-entry ()
   "View the current entry."
-  (let ((buffer-read-only nil)
-        (entry eg--current-entry))
+  (let ((buffer-read-only nil))
     (setf (buffer-string) "")
-    (if (eg-entry-has-previous-p entry)
-        (insert-text-button "[<< Prev]"
-                            'action (lambda (_)
-                                      (eg--view-entry
-                                       (eg-entry-previous entry))))
-      (insert "[<< Prev]"))
+    (eg--insert-nav "[<< Prev]"  #'eg-entry-has-previous-p #'eg-entry-previous)
     (insert " ")
-    (if (eg-entry-has-parent-p entry)
-        (insert-text-button "[^^ Up ^^]"
-                            'action (lambda (_)
-                                      (eg--view-entry
-                                       (eg-entry-parent entry))))
-      (insert "[^^ Up ^^]"))
+    (eg--insert-nav "[^^ Up ^^]" #'eg-entry-has-parent-p #'eg-entry-parent)
     (insert " ")
-    (if (eg-entry-has-next-p entry)
-        (insert-text-button "[Next >>]"
-                            'action (lambda (_)
-                                      (eg--view-entry
-                                       (eg-entry-next entry))))
-      (insert "[Next >>]"))
+    (eg--insert-nav "[Next >>]"  #'eg-entry-has-next-p   #'eg-entry-next)
     (insert "\n\n")
     (save-excursion
-      (cl-loop for line in (eg-entry-lines entry) do (insert line "\n")))
-    (when (eg-entry-short-p entry)
+      (cl-loop for line in (eg-entry-lines eg--current-entry) do (insert line "\n")))
+    (when (eg-entry-short-p eg--current-entry)
       (save-excursion
-        (cl-loop for link in (eg-entry-offsets entry)
+        (cl-loop for link in (eg-entry-offsets eg--current-entry)
                  do (make-text-button
                      (point-at-bol)
                      (point-at-eol)
