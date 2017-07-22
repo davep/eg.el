@@ -1,5 +1,11 @@
-;;; eg.el --- Norton Guide reader for GNU Emacs -*- lexical-binding: t -*-
+;;; eg.el --- Norton Guide reader -*- lexical-binding: t -*-
 ;; Copyright 2017 by Dave Pearson <davep@davep.org>
+
+;; Author: Dave Pearson <davep@davep.org>
+;; Version: 0.1
+;; Keywords: docs
+;; URL: https://github.com/davep/eg.el
+;; Package-Requires: ((cl-lib "0.5") (emacs "24"))
 
 ;; eg.el is free software distributed under the terms of the GNU General
 ;; Public Licence, version 2 or (at your option) any later version. For
@@ -8,7 +14,8 @@
 ;;; Commentary:
 ;;
 ;; eg.el provides code for reading the content of help databases built with
-;; Norton Guide and Expert Help.
+;; Norton Guide and Expert Help. It also provides commands for viewing and
+;; navigating the content of Norton Guide files.
 ;;
 ;; eg.el is currently a work in progress. Expect it to not work, or work
 ;; different, or something.
