@@ -413,6 +413,10 @@ New line markers are added at the end of each line."
   "Does it look like GUIDE is positioned on a long entry?"
   (eg-entry-long-p (eg-load-entry guide)))
 
+(defun eg-entry-has-parent-p (entry)
+  "Does ENTRY appear to have a parent entry?"
+  (> (eg-entry-parent entry) -1))
+
 (defun eg-entry-has-previous-p (entry)
   "Does ENTRY appear to have a previous entry?"
   (> (eg-entry-previous entry) -1))
