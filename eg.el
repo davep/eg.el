@@ -570,11 +570,11 @@ call to find the position to jump to."
   "View the current entry."
   (let ((buffer-read-only nil))
     (setf (buffer-string) "")
-    (eg--insert-nav "[<< Prev]"  #'eg-entry-has-previous-p #'eg-entry-previous)
+    (eg--insert-nav "[<< Prev]" #'eg-entry-has-previous-p #'eg-entry-previous)
     (insert " ")
     (eg--insert-nav "[^^ Up ^^]" #'eg-entry-has-parent-p #'eg-entry-parent)
     (insert " ")
-    (eg--insert-nav "[Next >>]"  #'eg-entry-has-next-p   #'eg-entry-next)
+    (eg--insert-nav "[Next >>]" #'eg-entry-has-next-p #'eg-entry-next)
     (insert "\n\n")
     (save-excursion
       (cl-loop for line in (eg-entry-lines eg--current-entry) do (insert line "\n")))
