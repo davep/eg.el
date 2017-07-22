@@ -498,6 +498,8 @@ ensures that it is closed again after BODY has been evaluated."
     (define-key map "?"       #'describe-mode)
     (setq eg-mode-map map)))
 
+(put 'eg-mode 'mode-class 'special)
+
 ;;;###autoload
 (defun eg-mode ()
   "Major mode for viewing Norton Guide database files."
