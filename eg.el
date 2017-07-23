@@ -498,6 +498,15 @@ ensures that it is closed again after BODY has been evaluated."
     (define-key map "?"       #'describe-mode)
     (setq eg-mode-map map)))
 
+(defun eg--header-line ()
+  "Returns the header line format for an `eg-mode' buffer."
+  '(:eval
+    (concat
+     "Expert Guide | "
+     (file-name-nondirectory (eg-guide-file eg--current-guide))
+     " | "
+     (eg-entry-type-description eg--current-entry))))
+
 (put 'eg-mode 'mode-class 'special)
 
 ;;;###autoload
@@ -512,7 +521,8 @@ The key bindings for `eg-mode' are:
   (setq major-mode       'eg-mode
         mode-name        "Expert Guide"
         buffer-read-only t
-        truncate-lines   t)
+        truncate-lines   t
+        header-line-format (eg--header-line))
   (buffer-disable-undo (current-buffer)))
 
 ;;;###autoload
