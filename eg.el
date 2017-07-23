@@ -768,6 +768,11 @@ The key bindings for `eg-mode' are:
           (254 . "\u25A0")
           (255 . "\u00A0"))))
 
+(defun eg--undosify-string (s)
+  "Try and turn S into something that will look pretty."
+  (apply #'concat
+         (cl-loop for c across s collect (gethash c eg--undosify-map (string c)))))
+
 (defun eg--view-entry (&optional offset)
   "View the entry at OFFSET."
   (when offset
@@ -850,11 +855,6 @@ show for the link."
               ((string= token "^")
                ;; GNDN
                ))))))
-
-(defun eg--undosify-string (s)
-  "Try and turn S into something that will look pretty."
-  (apply #'concat
-         (cl-loop for c across s collect (gethash c eg--undosify-map (string c)))))
 
 (defun eg--insert-entry-text ()
   "Insert the text of the current entry."
