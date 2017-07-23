@@ -431,6 +431,14 @@ New line markers are added at the end of each line."
   "Does ENTRY appear to have a next entry?"
   (> (eg-entry-next entry) 0))
 
+(defun eg-entry-has-parent-menu-p (entry)
+  "Does ENTRY have a parent menu?"
+  (> (eg-entry-parent-menu entry) 0))
+
+(defun eg-entry-has-parent-prompt-p (entry)
+  "Does ENTRY know which parent menu prompt it relates to?"
+  (> (eg-entry-parent-prompt entry) 0))
+
 (defun eg-eof-p (guide)
   "Do we appear to be at the end of GUIDE?"
   (or
