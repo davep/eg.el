@@ -770,6 +770,7 @@ The key bindings for `eg-mode' are:
           (255 . "\u00A0"))))
 
 (defun eg--undosify-char (c)
+  "Try and turn character C into something that will look pretty."
   (gethash c eg--undosify-map (string c)))
 
 (defun eg--undosify-string (s)
