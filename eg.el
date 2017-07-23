@@ -658,7 +658,8 @@ call to find the position to jump to."
                do (make-text-button
                    (point-at-bol)
                    (point-at-eol)
-                   'action `(lambda (_) (eg--view-entry ,link)))
+                   'action `(lambda (_) (eg--view-entry ,link))
+                   'help-echo "View this entry")
                (forward-line)))))
 
 (defun eg-view-current-entry ()
