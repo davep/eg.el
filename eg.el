@@ -768,6 +768,9 @@ The key bindings for `eg-mode' are:
           (254 . "\u25A0")
           (255 . "\u00A0"))))
 
+(defun eg--undosify-char (c)
+  (gethash c eg--undosify-map (string c)))
+
 (defun eg--undosify-string (s)
   "Try and turn S into something that will look pretty."
   (apply #'concat
@@ -843,9 +846,9 @@ show for the link."
               ((string= token "b")
                (delete-char 1))
               ((string= token "c")
-               (let ((char (buffer-substring-no-properties (point) (+ (point) 2))))
+               (let ((char (buffer-substring-no-properties (1+ (point)) (+ (point) 3))))
                  (delete-char 3)
-                 (insert (eg--undosify-string (make-string 1 (string-to-number char 16))))))
+                 (insert (eg--undosify-char (string-to-number char 16)))))
               ((string= token "n")
                (delete-char 1))
               ((string= token "r")
