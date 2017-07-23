@@ -585,7 +585,8 @@ call to find the position to jump to."
                           'action (lambda (_)
                                     (eg--view-entry
                                      (funcall pos eg--current-entry)))
-                          'help-echo help)
+                          'help-echo help
+                          'follow-link t)
     (insert button)))
 
 (defun eg--insert-see-alsos (entry)
@@ -599,7 +600,8 @@ call to find the position to jump to."
                and see-link in (eg-see-also-offsets (eg-entry-see-also entry))
                do (insert-button see
                                  'action `(lambda (_)
-                                            (eg--view-entry ,see-link)))
+                                            (eg--view-entry ,see-link))
+                                 'follow-link t)
                (insert " ")))))
 
 (defun eg--add-top-nav ()
@@ -659,7 +661,8 @@ call to find the position to jump to."
                    (point-at-bol)
                    (point-at-eol)
                    'action `(lambda (_) (eg--view-entry ,link))
-                   'help-echo "View this entry")
+                   'help-echo "View this entry"
+                   'follow-link t)
                (forward-line)))))
 
 (defun eg-view-current-entry ()
@@ -688,7 +691,8 @@ call to find the position to jump to."
                          prompt
                          'action `(lambda (_)
                                     (eg--view-entry ,link))
-                         'help-echo (format "View the \"%s\" entry" prompt))
+                         'help-echo (format "View the \"%s\" entry" prompt)
+                         'follow-link t)
                         (insert "\n"))))))
 
 (provide 'eg)
