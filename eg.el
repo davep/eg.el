@@ -506,6 +506,20 @@ ensures that it is closed again after BODY has been evaluated."
     (define-key map "?"       #'describe-mode)
     (setq eg-mode-map map)))
 
+(defun eg--entry-menu-path (entry)
+  "Describe the menu path for ENTRY."
+  (if (eg-entry-has-parent-menu-p entry)
+      (concat
+       (eg-menu-title
+        (nth (eg-entry-parent-menu entry)
+             (eg-guide-menus eg--current-guide)))
+       " >> "
+       (nth (eg-entry-parent-prompt entry)
+            (eg-menu-prompts
+             (nth (eg-entry-parent-menu entry)
+                  (eg-guide-menus eg--current-guide)))))
+    ""))
+
 (defun eg--header-line ()
   "Returns the header line format for an `eg-mode' buffer."
   '(:eval
@@ -513,7 +527,9 @@ ensures that it is closed again after BODY has been evaluated."
      "Expert Guide | "
      (file-name-nondirectory (eg-guide-file eg--current-guide))
      " | "
-     (eg-entry-type-description eg--current-entry))))
+     (eg-entry-type-description eg--current-entry)
+     " | "
+     (eg--entry-menu-path eg--current-entry))))
 
 (put 'eg-mode 'mode-class 'special)
 
