@@ -521,7 +521,7 @@ ensures that it is closed again after BODY has been evaluated."
     ""))
 
 (defun eg--header-line ()
-  "Returns the header line format for an `eg-mode' buffer."
+  "Return the header line format for an `eg-mode' buffer."
   '(:eval
     (concat
      "Expert Guide | "
@@ -613,7 +613,8 @@ The key bindings for `eg-mode' are:
 
 BUTTON is the text. TEST is the function used to test if we
 should make the button a live link. POS is the function we should
-call to find the position to jump to."
+call to find the position to jump to. HELP is the help text to
+show for the link."
   (if (funcall test eg--current-entry)
       (insert-text-button button
                           'action (lambda (_)
