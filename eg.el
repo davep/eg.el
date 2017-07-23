@@ -601,6 +601,7 @@ call to find the position to jump to."
                do (insert-button see
                                  'action `(lambda (_)
                                             (eg--view-entry ,see-link))
+                                 'help-echo (format "See also \"%s\"" see)
                                  'follow-link t)
                (insert " ")))))
 
