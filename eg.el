@@ -685,8 +685,10 @@ call to find the position to jump to."
                         and link in (eg-menu-offsets menu)
                         do (insert "\t")
                         (insert-text-button
-                         prompt 'action `(lambda (_)
-                                           (eg--view-entry ,link)))
+                         prompt
+                         'action `(lambda (_)
+                                    (eg--view-entry ,link))
+                         'help-echo (format "View the \"%s\" entry" prompt))
                         (insert "\n"))))))
 
 (provide 'eg)
