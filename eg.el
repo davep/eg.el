@@ -574,7 +574,7 @@ The key bindings for `eg-mode' are:
         (eg-load-entry eg--current-guide))
   (eg-view-current-entry))
 
-(defun eg--insert-nav (button test pos)
+(defun eg--insert-nav (button test pos help)
   "Insert a navigation button.
 
 BUTTON is the text. TEST is the function used to test if we
@@ -584,7 +584,8 @@ call to find the position to jump to."
       (insert-text-button button
                           'action (lambda (_)
                                     (eg--view-entry
-                                     (funcall pos eg--current-entry))))
+                                     (funcall pos eg--current-entry)))
+                          'help-echo help)
     (insert button)))
 
 (defun eg--insert-see-alsos (entry)
@@ -605,11 +606,11 @@ call to find the position to jump to."
   "Add navigation links to the top of the buffer."
   (save-excursion
     (setf (point) (point-min))
-    (eg--insert-nav "[<< Prev]" #'eg-entry-has-previous-p #'eg-entry-previous)
+    (eg--insert-nav "[<< Prev]" #'eg-entry-has-previous-p #'eg-entry-previous "Go to the previous entry")
     (insert " ")
-    (eg--insert-nav "[^^ Up ^^]" #'eg-entry-has-parent-p #'eg-entry-parent)
+    (eg--insert-nav "[^^ Up ^^]" #'eg-entry-has-parent-p #'eg-entry-parent "Go to the parent entry")
     (insert " ")
-    (eg--insert-nav "[Next >>]" #'eg-entry-has-next-p #'eg-entry-next)
+    (eg--insert-nav "[Next >>]" #'eg-entry-has-next-p #'eg-entry-next "Go to the next entry")
     (insert "\n\n")))
 
 (defun eg--add-bottom-nav ()
