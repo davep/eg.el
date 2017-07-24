@@ -782,8 +782,7 @@ The key bindings for `eg-mode' are:
   "View the entry at OFFSET."
   (when offset
     (eg-goto eg--current-guide offset))
-  (setq eg--current-entry
-        (eg-load-entry eg--current-guide))
+  (setq eg--current-entry (eg-load-entry eg--current-guide))
   (eg-view-current-entry))
 
 (defun eg--insert-nav (button test pos help)
