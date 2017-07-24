@@ -223,6 +223,15 @@ This has the side-effect of moving `eg-guide-pos'"
   "Does C look like an RLE marker?"
   (= c eg-rle-marker))
 
+(defun eg-clean-string (s)
+  "Clean string S of RLE-markers, but don't expand.
+
+It's rare, but some guides seem to include an RLE marker or two
+inside menu options, but with no actual RLE expansion value to
+follow. This function can be used to clean strings of RLE markers
+in situations where RLE-expansion is unlikely to make sense."
+  (replace-regexp-in-string (string eg-rle-marker) " " s))
+
 (defun eg-expand-string (s)
   "RLE-expand spaces in string S."
   (apply #'concat
