@@ -601,8 +601,7 @@ The key bindings for `eg-mode' are:
   (kill-buffer))
 
 (defvar eg--undosify-map nil
-  "Hash table of text translations to try and turn old DOS text
-  into something that might display well")
+  "Hash table of text translations.")
 
 (unless eg--undosify-map
   (setq eg--undosify-map (make-hash-table))
