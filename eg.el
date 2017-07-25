@@ -163,11 +163,6 @@ This has the side-effect of moving `eg-guide-pos'."
   (let ((byte (string-to-char (eg-read guide 1))))
     (eg-make-signed-byte (eg-decrypt byte decrypt))))
 
-(cl-defun eg-peek-byte (guide &optional (decrypt t))
-  "Return current byte in GUIDE but don't move position."
-  (eg-save-excursion guide
-    (eg-read-byte guide decrypt)))
-
 (defun eg-make-signed-word (n)
   "Ensure N is a signed word."
   (if (zerop (logand n #x8000))
@@ -184,11 +179,6 @@ This has the side-effect of moving `eg-guide-pos'"
     (let ((lo (eg-decrypt (aref word 0) decrypt))
           (hi (eg-decrypt (aref word 1) decrypt)))
       (eg-make-signed-word (+ (lsh hi 8) lo)))))
-
-(cl-defun eg-peek-word (guide &optional (decrypt t))
-  "Return current word in GUIDE but don't move position."
-  (eg-save-excursion guide
-    (eg-read-word guide decrypt)))
 
 (defun eg-make-signed-long (n)
   "Ensure N is a signed long."
@@ -209,11 +199,6 @@ This has the side-effect of moving `eg-guide-pos'"
           (hihi (eg-decrypt (aref long 3) decrypt)))
       (eg-make-signed-long
        (+ (lsh (+ (lsh hihi 8) hilo) 16) (+ (lsh lohi 8) lolo))))))
-
-(cl-defun eg-peek-long (guide &optional (decrypt t))
-  "Return current long in GUIDE but don't move position."
-  (eg-save-excursion guide
-    (eg-read-long guide decrypt)))
 
 (cl-defun eg-decrypt-string (s)
   "Decrypt string S."
