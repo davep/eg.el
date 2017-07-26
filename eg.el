@@ -596,7 +596,6 @@ The key bindings for `eg-mode' are:
   (when (and eg--current-entry (eg-entry-has-previous-p eg--current-entry))
     (eg--view-entry (eg-entry-previous eg--current-entry))))
 
-;;;###autoload
 (defun eg-quit ()
   "Quit the EG buffer."
   (interactive)
