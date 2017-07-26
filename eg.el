@@ -481,6 +481,11 @@ ensures that it is closed again after BODY has been evaluated."
   "Face for text links in short entries."
   :group 'eg)
 
+(defface eg-viewer-nav-button-face
+  '((t :inherit widget-button))
+  "Face for top navigation buttons."
+  :group 'eg)
+
 (defvar eg--current-guide nil
   "The current guide being viewed in an EG buffer.")
 
@@ -808,6 +813,7 @@ show for the link."
                             'action (lambda (_)
                                       (eg--view-entry
                                        (funcall pos eg--current-entry)))
+                            'face 'eg-viewer-nav-button-face
                             'help-echo help
                             'follow-link t)
       (insert button))))
