@@ -842,6 +842,13 @@ etc."
                      'follow-link t))
                (forward-line)))))
 
+(defmacro eg--with-valid-buffer (&rest body)
+  "Evaluate BODY after checking the current buffer is a guide."
+  `(if eg--current-guide
+       (progn
+         ,@body)
+     (error "The current buffer doesn't appear to be an EG buffer")))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Norton guide viewing mode and commands.
 
@@ -889,79 +896,88 @@ The key bindings for `eg-mode' are:
 (defun eg-jump-next-link ()
   "Jump to the next link in the buffer."
   (interactive)
-  (unless (next-button (point))
-    (setf (point) (point-min)))
-  (forward-button 1))
+  (eg--with-valid-buffer
+   (unless (next-button (point))
+     (setf (point) (point-min)))
+   (forward-button 1)))
 
 (defun eg-jump-prev-link ()
   "Jump to the previous link in the buffer."
   (interactive)
-  (unless (previous-button (point))
-    (setf (point) (point-max)))
-  (backward-button 1))
+  (eg--with-valid-buffer
+   (unless (previous-button (point))
+     (setf (point) (point-max)))
+   (backward-button 1)))
 
 (defun eg-goto-parent-entry-maybe ()
   "Load and view the parent entry, if there is one."
   (interactive)
-  (when (and eg--current-entry (eg-entry-has-parent-p eg--current-entry))
-    (eg--view-entry (eg-entry-parent eg--current-entry))))
+  (eg--with-valid-buffer
+   (when (and eg--current-entry (eg-entry-has-parent-p eg--current-entry))
+     (eg--view-entry (eg-entry-parent eg--current-entry)))))
 
 (defun eg-goto-next-entry-maybe ()
   "Load and view the next entry, if there is one."
   (interactive)
-  (when (and eg--current-entry (eg-entry-has-next-p eg--current-entry))
-    (eg--view-entry (eg-entry-next eg--current-entry))))
+  (eg--with-valid-buffer
+   (when (and eg--current-entry (eg-entry-has-next-p eg--current-entry))
+     (eg--view-entry (eg-entry-next eg--current-entry)))))
 
 (defun eg-goto-prev-entry-maybe ()
   "Load and view the previous entry, if there is one."
   (interactive)
-  (when (and eg--current-entry (eg-entry-has-previous-p eg--current-entry))
-    (eg--view-entry (eg-entry-previous eg--current-entry))))
+  (eg--with-valid-buffer
+   (when (and eg--current-entry (eg-entry-has-previous-p eg--current-entry))
+     (eg--view-entry (eg-entry-previous eg--current-entry)))))
 
 (defun eg-goto-first-entry ()
   "Jump to and view the first entry."
   (interactive)
-  (eg--view-entry (eg-goto-first eg--current-guide)))
+  (eg--with-valid-buffer
+   (eg--view-entry (eg-goto-first eg--current-guide))))
 
 (defun eg-view-menu ()
   "View the current guide's menu."
   (interactive)
-  (let ((buffer-read-only nil))
-    (setf (buffer-string) "")
-    (setq eg--current-entry nil)
-    (setq eg--currently-displaying :eg-menu)
-    (save-excursion
-      (cl-loop for menu in (eg-guide-menus eg--current-guide)
-               do
-               (insert (eg-menu-title menu) "\n")
-               (cl-loop for prompt in (eg-menu-prompts menu)
-                        and link in (eg-menu-offsets menu)
-                        do (insert "\t")
-                        (insert-text-button
-                         prompt
-                         'action `(lambda (_)
-                                    (eg--view-entry ,link))
-                         'face 'eg-viewer-text-link-face
-                         'help-echo (format "View the \"%s\" entry" prompt)
-                         'follow-link t)
-                        (insert "\n"))))))
+  (eg--with-valid-buffer
+   (let ((buffer-read-only nil))
+     (setf (buffer-string) "")
+     (setq eg--current-entry nil)
+     (setq eg--currently-displaying :eg-menu)
+     (save-excursion
+       (cl-loop for menu in (eg-guide-menus eg--current-guide)
+                do
+                (insert (eg-menu-title menu) "\n")
+                (cl-loop for prompt in (eg-menu-prompts menu)
+                         and link in (eg-menu-offsets menu)
+                         do (insert "\t")
+                         (insert-text-button
+                          prompt
+                          'action `(lambda (_)
+                                     (eg--view-entry ,link))
+                          'face 'eg-viewer-text-link-face
+                          'help-echo (format "View the \"%s\" entry" prompt)
+                          'follow-link t)
+                         (insert "\n")))))))
 
 (defun eg-view-credits ()
   "View the credits for the current guide."
   (interactive)
-  (let ((buffer-read-only nil))
-    (setf (buffer-string) "")
-    (setq eg--current-entry nil)
-    (setq eg--currently-displaying :eg-credits)
-    (save-excursion
-      (cl-loop for line in (eg-guide-credits eg--current-guide)
-               do (insert (eg--undosify-string line) "\n")))))
+  (eg--with-valid-buffer
+   (let ((buffer-read-only nil))
+     (setf (buffer-string) "")
+     (setq eg--current-entry nil)
+     (setq eg--currently-displaying :eg-credits)
+     (save-excursion
+       (cl-loop for line in (eg-guide-credits eg--current-guide)
+                do (insert (eg--undosify-string line) "\n"))))))
 
 (defun eg-quit ()
   "Quit the EG buffer."
   (interactive)
-  (eg-close eg--current-guide)
-  (kill-buffer))
+  (eg--with-valid-buffer
+   (eg-close eg--current-guide)
+   (kill-buffer)))
 
 ;;;###autoload
 (defun eg (file)
