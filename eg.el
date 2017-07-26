@@ -829,7 +829,13 @@ show for the link."
       (eg--insert-see-alsos eg--current-entry))))
 
 (defun eg--decorate-buffer ()
-  "Parse tokens, etc, to make the buffer more readable."
+  "Parse tokens, etc, to make the buffer more readable.
+
+At the moment this code does very little. Other than the
+C (character) token, it just strips tokens from the text. At some
+point in the near future it would make sense to have this code
+actually decorate the buffer with bold, underline, reverse text,
+etc."
   (save-excursion
     (setf (point) (point-min))
     (while (search-forward "^" nil t)
