@@ -522,6 +522,7 @@ ensures that it is closed again after BODY has been evaluated."
     (define-key map "k"         #'eg-goto-parent-entry-maybe)
     (define-key map "w"         #'eg-goto-parent-entry-maybe)
     (define-key map "m"         #'eg-view-menu)
+    (define-key map "c"         #'eg-view-credits)
     (define-key map "q"         #'eg-quit)
     (define-key map "?"         #'describe-mode)
     (setq eg-mode-map map)))
@@ -555,7 +556,9 @@ ensures that it is closed again after BODY has been evaluated."
              " | "
              (eg--entry-menu-path eg--current-entry))))
        (:eg-menu
-        "Menu")))))
+        "Menu")
+       (:eg-credits
+        "Credits")))))
 
 (put 'eg-mode 'mode-class 'special)
 
@@ -948,6 +951,17 @@ etc."
                          'help-echo (format "View the \"%s\" entry" prompt)
                          'follow-link t)
                         (insert "\n"))))))
+
+(defun eg-view-credits ()
+  "View the credits for the current guide."
+  (interactive)
+  (let ((buffer-read-only nil))
+    (setf (buffer-string) "")
+    (setq eg--current-entry nil)
+    (setq eg--currently-displaying :eg-credits)
+    (save-excursion
+      (cl-loop for line in (eg-guide-credits eg--current-guide)
+               do (insert (eg--undosify-string line) "\n")))))
 
 (provide 'eg)
 
