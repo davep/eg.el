@@ -394,7 +394,7 @@ New line markers are added at the end of each line."
 
 (defun eg-guide-good-magic-p (guide)
   "Does GUIDE appear to be a Norton Guide file?"
-  (memq (eg-guide-magic guide) (list eg-magic-ng eg-magic-eh)))
+  (member (eg-guide-magic guide) (list eg-magic-ng eg-magic-eh)))
 
 (defun eg-guide-type (guide)
   "Return a string that describes the type of GUIDE."
