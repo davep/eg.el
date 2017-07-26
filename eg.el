@@ -22,6 +22,9 @@
 
 ;;; Code:
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; General Norton Guide reading code.
+
 (require 'cl-lib)
 
 (defconst eg-magic-ng "NG"
@@ -475,6 +478,8 @@ ensures that it is closed again after BODY has been evaluated."
            ,@body)
        (eg-close ,guide))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Customizable parts of the Norton Guide reader.
 
 (defgroup eg nil
   "Expert Help: The Emacs Norton Guide viewer"
@@ -495,6 +500,9 @@ ensures that it is closed again after BODY has been evaluated."
   "Face for see-also links."
   :group 'eg)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Guide viewer "internals".
+
 (defvar eg--current-guide nil
   "The current guide being viewed in an EG buffer.")
 
@@ -503,29 +511,6 @@ ensures that it is closed again after BODY has been evaluated."
 
 (defvar eg--currently-displaying nil
   "Informs the display code what it is we're displaying.")
-
-(defvar eg-mode-map nil
-  "Local keymap for Expert Guide.")
-
-(unless eg-mode-map
-  (let ((map (make-sparse-keymap)))
-    (suppress-keymap map t)
-    (define-key map (kbd "TAB") #'eg-jump-next-link)
-    (define-key map [backtab]   #'eg-jump-prev-link)
-    (define-key map ">"         #'eg-goto-next-entry-maybe)
-    (define-key map "l"         #'eg-goto-next-entry-maybe)
-    (define-key map "d"         #'eg-goto-next-entry-maybe)
-    (define-key map "<"         #'eg-goto-prev-entry-maybe)
-    (define-key map "h"         #'eg-goto-prev-entry-maybe)
-    (define-key map "a"         #'eg-goto-prev-entry-maybe)
-    (define-key map "^"         #'eg-goto-parent-entry-maybe)
-    (define-key map "k"         #'eg-goto-parent-entry-maybe)
-    (define-key map "w"         #'eg-goto-parent-entry-maybe)
-    (define-key map "m"         #'eg-view-menu)
-    (define-key map "c"         #'eg-view-credits)
-    (define-key map "q"         #'eg-quit)
-    (define-key map "?"         #'describe-mode)
-    (setq eg-mode-map map)))
 
 (defun eg--entry-menu-path (entry)
   "Describe the menu path for ENTRY."
@@ -559,74 +544,6 @@ ensures that it is closed again after BODY has been evaluated."
         "Menu")
        (:eg-credits
         "Credits")))))
-
-(put 'eg-mode 'mode-class 'special)
-
-(defun eg-mode ()
-  "Major mode for viewing Norton Guide database files.
-
-The key bindings for `eg-mode' are:
-
-\\{eg-mode-map}"
-  (kill-all-local-variables)
-  (use-local-map eg-mode-map)
-  (setq major-mode       'eg-mode
-        mode-name        "Expert Guide"
-        buffer-read-only t
-        truncate-lines   t
-        header-line-format (eg--header-line))
-  (buffer-disable-undo (current-buffer)))
-
-;;;###autoload
-(defun eg (file)
-  "View FILE as a Norton Guide database."
-  (interactive "fGuide: ")
-  (let ((buffer (get-buffer-create (format "EG: %s" file))))
-    (switch-to-buffer buffer)
-    (with-current-buffer buffer
-      (eg-mode)
-      (set (make-local-variable 'eg--current-guide)        (eg-open file))
-      (set (make-local-variable 'eg--current-entry)        nil)
-      (set (make-local-variable 'eg--currently-displaying) nil)
-      (eg--view-entry))))
-
-(defun eg-jump-next-link ()
-  "Jump to the next link in the buffer."
-  (interactive)
-  (unless (next-button (point))
-    (setf (point) (point-min)))
-  (forward-button 1))
-
-(defun eg-jump-prev-link ()
-  "Jump to the previous link in the buffer."
-  (interactive)
-  (unless (previous-button (point))
-    (setf (point) (point-max)))
-  (backward-button 1))
-
-(defun eg-goto-parent-entry-maybe ()
-  "Load and view the parent entry, if there is one."
-  (interactive)
-  (when (and eg--current-entry (eg-entry-has-parent-p eg--current-entry))
-    (eg--view-entry (eg-entry-parent eg--current-entry))))
-
-(defun eg-goto-next-entry-maybe ()
-  "Load and view the next entry, if there is one."
-  (interactive)
-  (when (and eg--current-entry (eg-entry-has-next-p eg--current-entry))
-    (eg--view-entry (eg-entry-next eg--current-entry))))
-
-(defun eg-goto-prev-entry-maybe ()
-  "Load and view the previous entry, if there is one."
-  (interactive)
-  (when (and eg--current-entry (eg-entry-has-previous-p eg--current-entry))
-    (eg--view-entry (eg-entry-previous eg--current-entry))))
-
-(defun eg-quit ()
-  "Quit the EG buffer."
-  (interactive)
-  (eg-close eg--current-guide)
-  (kill-buffer))
 
 (defvar eg--undosify-map nil
   "Hash table of text translations.")
@@ -811,7 +728,13 @@ The key bindings for `eg-mode' are:
     (eg-goto eg--current-guide offset))
   (setq eg--current-entry (eg-load-entry eg--current-guide))
   (setq eg--currently-displaying :eg-entry)
-  (eg-view-current-entry))
+  (let ((buffer-read-only nil))
+    (setf (buffer-string) "")
+    (eg--insert-entry-text)
+    (eg--linkify-entry-text)
+    (eg--decorate-buffer)
+    (eg--add-top-nav)
+    (eg--add-bottom-nav)))
 
 (defun eg--insert-nav (button test pos help)
   "Insert a navigation button.
@@ -919,15 +842,80 @@ etc."
                      'follow-link t))
                (forward-line)))))
 
-(defun eg-view-current-entry ()
-  "View the current entry."
-  (let ((buffer-read-only nil))
-    (setf (buffer-string) "")
-    (eg--insert-entry-text)
-    (eg--linkify-entry-text)
-    (eg--decorate-buffer)
-    (eg--add-top-nav)
-    (eg--add-bottom-nav)))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Norton guide viewing mode and commands.
+
+(defvar eg-mode-map nil
+  "Local keymap for Expert Guide.")
+
+(unless eg-mode-map
+  (let ((map (make-sparse-keymap)))
+    (suppress-keymap map t)
+    (define-key map (kbd "TAB") #'eg-jump-next-link)
+    (define-key map [backtab]   #'eg-jump-prev-link)
+    (define-key map ">"         #'eg-goto-next-entry-maybe)
+    (define-key map "l"         #'eg-goto-next-entry-maybe)
+    (define-key map "d"         #'eg-goto-next-entry-maybe)
+    (define-key map "<"         #'eg-goto-prev-entry-maybe)
+    (define-key map "h"         #'eg-goto-prev-entry-maybe)
+    (define-key map "a"         #'eg-goto-prev-entry-maybe)
+    (define-key map "^"         #'eg-goto-parent-entry-maybe)
+    (define-key map "k"         #'eg-goto-parent-entry-maybe)
+    (define-key map "w"         #'eg-goto-parent-entry-maybe)
+    (define-key map "m"         #'eg-view-menu)
+    (define-key map "c"         #'eg-view-credits)
+    (define-key map "q"         #'eg-quit)
+    (define-key map "?"         #'describe-mode)
+    (setq eg-mode-map map)))
+
+(put 'eg-mode 'mode-class 'special)
+
+(defun eg-mode ()
+  "Major mode for viewing Norton Guide database files.
+
+The key bindings for `eg-mode' are:
+
+\\{eg-mode-map}"
+  (kill-all-local-variables)
+  (use-local-map eg-mode-map)
+  (setq major-mode       'eg-mode
+        mode-name        "Expert Guide"
+        buffer-read-only t
+        truncate-lines   t
+        header-line-format (eg--header-line))
+  (buffer-disable-undo (current-buffer)))
+
+(defun eg-jump-next-link ()
+  "Jump to the next link in the buffer."
+  (interactive)
+  (unless (next-button (point))
+    (setf (point) (point-min)))
+  (forward-button 1))
+
+(defun eg-jump-prev-link ()
+  "Jump to the previous link in the buffer."
+  (interactive)
+  (unless (previous-button (point))
+    (setf (point) (point-max)))
+  (backward-button 1))
+
+(defun eg-goto-parent-entry-maybe ()
+  "Load and view the parent entry, if there is one."
+  (interactive)
+  (when (and eg--current-entry (eg-entry-has-parent-p eg--current-entry))
+    (eg--view-entry (eg-entry-parent eg--current-entry))))
+
+(defun eg-goto-next-entry-maybe ()
+  "Load and view the next entry, if there is one."
+  (interactive)
+  (when (and eg--current-entry (eg-entry-has-next-p eg--current-entry))
+    (eg--view-entry (eg-entry-next eg--current-entry))))
+
+(defun eg-goto-prev-entry-maybe ()
+  "Load and view the previous entry, if there is one."
+  (interactive)
+  (when (and eg--current-entry (eg-entry-has-previous-p eg--current-entry))
+    (eg--view-entry (eg-entry-previous eg--current-entry))))
 
 (defun eg-view-menu ()
   "View the current guide's menu."
@@ -962,6 +950,25 @@ etc."
     (save-excursion
       (cl-loop for line in (eg-guide-credits eg--current-guide)
                do (insert (eg--undosify-string line) "\n")))))
+
+(defun eg-quit ()
+  "Quit the EG buffer."
+  (interactive)
+  (eg-close eg--current-guide)
+  (kill-buffer))
+
+;;;###autoload
+(defun eg (file)
+  "View FILE as a Norton Guide database."
+  (interactive "fGuide: ")
+  (let ((buffer (get-buffer-create (format "EG: %s" file))))
+    (switch-to-buffer buffer)
+    (with-current-buffer buffer
+      (eg-mode)
+      (set (make-local-variable 'eg--current-guide)        (eg-open file))
+      (set (make-local-variable 'eg--current-entry)        nil)
+      (set (make-local-variable 'eg--currently-displaying) nil)
+      (eg--view-entry))))
 
 (provide 'eg)
 
