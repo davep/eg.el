@@ -523,12 +523,16 @@ ensures that it is closed again after BODY has been evaluated."
     (concat
      "Expert Guide | "
      (file-name-nondirectory (eg-guide-file eg--current-guide))
-     (if eg--current-entry
-         (concat
-          " | "
-          (eg-entry-type-description eg--current-entry)
-          " | "
-          (eg--entry-menu-path eg--current-entry))))))
+     " | "
+     (cl-case eg--currently-displaying
+       (:eg-entry
+        (if eg--current-entry
+            (concat
+             (eg-entry-type-description eg--current-entry)
+             " | "
+             (eg--entry-menu-path eg--current-entry))))
+       (:eg-menu
+        "Menu")))))
 
 (put 'eg-mode 'mode-class 'special)
 
