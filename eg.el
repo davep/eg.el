@@ -582,8 +582,9 @@ The key bindings for `eg-mode' are:
     (switch-to-buffer buffer)
     (with-current-buffer buffer
       (eg-mode)
-      (set (make-local-variable 'eg--current-guide) (eg-open file))
-      (set (make-local-variable 'eg--current-entry) nil)
+      (set (make-local-variable 'eg--current-guide)        (eg-open file))
+      (set (make-local-variable 'eg--current-entry)        nil)
+      (set (make-local-variable 'eg--currently-displaying) nil)
       (eg--view-entry))))
 
 (defun eg-jump-next-link ()
