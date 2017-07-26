@@ -862,6 +862,7 @@ etc."
     (define-key map "^"         #'eg-goto-parent-entry-maybe)
     (define-key map "k"         #'eg-goto-parent-entry-maybe)
     (define-key map "w"         #'eg-goto-parent-entry-maybe)
+    (define-key map "f"         #'eg-goto-first-entry)
     (define-key map "m"         #'eg-view-menu)
     (define-key map "c"         #'eg-view-credits)
     (define-key map "q"         #'eg-quit)
@@ -916,6 +917,11 @@ The key bindings for `eg-mode' are:
   (interactive)
   (when (and eg--current-entry (eg-entry-has-previous-p eg--current-entry))
     (eg--view-entry (eg-entry-previous eg--current-entry))))
+
+(defun eg-goto-first-entry ()
+  "Jump to and view the first entry."
+  (interactive)
+  (eg--view-entry (eg-goto-first eg--current-guide)))
 
 (defun eg-view-menu ()
   "View the current guide's menu."
