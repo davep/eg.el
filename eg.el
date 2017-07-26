@@ -478,6 +478,9 @@ ensures that it is closed again after BODY has been evaluated."
 (defvar eg--current-entry nil
   "The entry currently being viewed in an EG buffer.")
 
+(defvar eg--currently-displaying nil
+  "Informs the display code what it is we're displaying.")
+
 (defvar eg-mode-map nil
   "Local keymap for Expert Guide.")
 
@@ -778,6 +781,7 @@ The key bindings for `eg-mode' are:
   (when offset
     (eg-goto eg--current-guide offset))
   (setq eg--current-entry (eg-load-entry eg--current-guide))
+  (setq eg--currently-displaying :eg-entry)
   (eg-view-current-entry))
 
 (defun eg--insert-nav (button test pos help)
@@ -898,6 +902,7 @@ etc."
   (let ((buffer-read-only nil))
     (setf (buffer-string) "")
     (setq eg--current-entry nil)
+    (setq eg--currently-displaying :eg-menu)
     (save-excursion
       (cl-loop for menu in (eg-guide-menus eg--current-guide)
                do
