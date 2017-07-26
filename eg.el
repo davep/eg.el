@@ -520,10 +520,12 @@ ensures that it is closed again after BODY has been evaluated."
     (concat
      "Expert Guide | "
      (file-name-nondirectory (eg-guide-file eg--current-guide))
-     " | "
-     (eg-entry-type-description eg--current-entry)
-     " | "
-     (eg--entry-menu-path eg--current-entry))))
+     (if eg--current-entry
+         (concat
+          " | "
+          (eg-entry-type-description eg--current-entry)
+          " | "
+          (eg--entry-menu-path eg--current-entry))))))
 
 (put 'eg-mode 'mode-class 'special)
 
@@ -572,19 +574,19 @@ The key bindings for `eg-mode' are:
 (defun eg-goto-parent-entry-maybe ()
   "Load and view the parent entry, if there is one."
   (interactive)
-  (when (eg-entry-has-parent-p eg--current-entry)
+  (when (and eg--current-entry (eg-entry-has-parent-p eg--current-entry))
     (eg--view-entry (eg-entry-parent eg--current-entry))))
 
 (defun eg-goto-next-entry-maybe ()
   "Load and view the next entry, if there is one."
   (interactive)
-  (when (eg-entry-has-next-p eg--current-entry)
+  (when (and eg--current-entry (eg-entry-has-next-p eg--current-entry))
     (eg--view-entry (eg-entry-next eg--current-entry))))
 
 (defun eg-goto-prev-entry-maybe ()
   "Load and view the previous entry, if there is one."
   (interactive)
-  (when (eg-entry-has-previous-p eg--current-entry)
+  (when (and eg--current-entry (eg-entry-has-previous-p eg--current-entry))
     (eg--view-entry (eg-entry-previous eg--current-entry))))
 
 ;;;###autoload
@@ -785,14 +787,15 @@ BUTTON is the text. TEST is the function used to test if we
 should make the button a live link. POS is the function we should
 call to find the position to jump to. HELP is the help text to
 show for the link."
-  (if (funcall test eg--current-entry)
-      (insert-text-button button
-                          'action (lambda (_)
-                                    (eg--view-entry
-                                     (funcall pos eg--current-entry)))
-                          'help-echo help
-                          'follow-link t)
-    (insert button)))
+  (when eg--current-entry
+    (if (funcall test eg--current-entry)
+        (insert-text-button button
+                            'action (lambda (_)
+                                      (eg--view-entry
+                                       (funcall pos eg--current-entry)))
+                            'help-echo help
+                            'follow-link t)
+      (insert button))))
 
 (defun eg--insert-see-alsos (entry)
   "Insert any see-also links for ENTRY."
@@ -823,10 +826,11 @@ show for the link."
 
 (defun eg--add-bottom-nav ()
   "Add navigation links to the bottom of the buffer."
-  (save-excursion
-    (setf (point) (point-max))
-    (when (eg-entry-long-p eg--current-entry)
-      (eg--insert-see-alsos eg--current-entry))))
+  (when eg--current-entry
+    (save-excursion
+      (setf (point) (point-max))
+      (when (eg-entry-long-p eg--current-entry)
+        (eg--insert-see-alsos eg--current-entry)))))
 
 (defun eg--decorate-buffer ()
   "Parse tokens, etc, to make the buffer more readable.
@@ -893,6 +897,7 @@ etc."
   (interactive)
   (let ((buffer-read-only nil))
     (setf (buffer-string) "")
+    (setq eg--current-entry nil)
     (save-excursion
       (cl-loop for menu in (eg-guide-menus eg--current-guide)
                do
