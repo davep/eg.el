@@ -482,7 +482,7 @@ ensures that it is closed again after BODY has been evaluated."
   :group 'eg)
 
 (defface eg-viewer-nav-button-face
-  '((t :inherit widget-button))
+  '((t :inherit custom-button))
   "Face for top navigation buttons."
   :group 'eg)
 
