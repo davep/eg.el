@@ -472,6 +472,15 @@ ensures that it is closed again after BODY has been evaluated."
        (eg-close ,guide))))
 
 
+(defgroup eg nil
+  "Expert Help: The Emacs Norton Guide viewer"
+  :group 'docs)
+
+(defface eg-viewer-text-link-face
+  '((t :inherit widget-button))
+  "Face for text links in short entries."
+  :group 'eg)
+
 (defvar eg--current-guide nil
   "The current guide being viewed in an EG buffer.")
 
@@ -884,6 +893,7 @@ etc."
                    (point-at-bol)
                    (point-at-eol)
                    'action `(lambda (_) (eg--view-entry ,link))
+                   'face 'eg-viewer-text-link-face
                    'help-echo "View this entry"
                    'follow-link t)
                (forward-line)))))
