@@ -892,7 +892,7 @@ The key bindings for `eg-mode' are:
         buffer-read-only t
         truncate-lines   t
         header-line-format (eg--header-line))
-  (buffer-disable-undo (current-buffer)))
+  (buffer-disable-undo))
 
 (defun eg-jump-next-link ()
   "Jump to the next link in the buffer."
