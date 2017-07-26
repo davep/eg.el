@@ -536,7 +536,6 @@ ensures that it is closed again after BODY has been evaluated."
 
 (put 'eg-mode 'mode-class 'special)
 
-;;;###autoload
 (defun eg-mode ()
   "Major mode for viewing Norton Guide database files.
 
