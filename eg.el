@@ -486,6 +486,11 @@ ensures that it is closed again after BODY has been evaluated."
   "Face for top navigation buttons."
   :group 'eg)
 
+(defface eg-viewer-see-also-face
+  '((t :inherit widget-button))
+  "Face for see-also links."
+  :group 'eg)
+
 (defvar eg--current-guide nil
   "The current guide being viewed in an EG buffer.")
 
@@ -830,6 +835,7 @@ show for the link."
                do (insert-button see
                                  'action `(lambda (_)
                                             (eg--view-entry ,see-link))
+                                 'face 'eg-viewer-see-also-face
                                  'help-echo (format "See also \"%s\"" see)
                                  'follow-link t)
                (insert " ")))))
