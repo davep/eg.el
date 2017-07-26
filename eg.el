@@ -938,6 +938,7 @@ etc."
                          prompt
                          'action `(lambda (_)
                                     (eg--view-entry ,link))
+                         'face 'eg-viewer-text-link-face
                          'help-echo (format "View the \"%s\" entry" prompt)
                          'follow-link t)
                         (insert "\n"))))))
