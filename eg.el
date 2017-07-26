@@ -413,17 +413,21 @@ New line markers are added at the end of each line."
   "Does it look like GUIDE is positioned on a long entry?"
   (eg-entry-long-p (eg-load-entry guide)))
 
+(defun eg-valid-pointer-p (pointer)
+  "Does POINTER look like a valid guide location?"
+  (> pointer 0))
+
 (defun eg-entry-has-parent-p (entry)
   "Does ENTRY appear to have a parent entry?"
-  (> (eg-entry-parent entry) 0))
+  (eg-valid-pointer-p (eg-entry-parent entry)))
 
 (defun eg-entry-has-previous-p (entry)
   "Does ENTRY appear to have a previous entry?"
-  (> (eg-entry-previous entry) 0))
+  (eg-valid-pointer-p (eg-entry-previous entry)))
 
 (defun eg-entry-has-next-p (entry)
   "Does ENTRY appear to have a next entry?"
-  (> (eg-entry-next entry) 0))
+  (eg-valid-pointer-p (eg-entry-next entry)))
 
 (defun eg-entry-has-parent-menu-p (entry)
   "Does ENTRY have a parent menu?"
@@ -901,13 +905,14 @@ etc."
   (when (eg-entry-short-p eg--current-entry)
     (save-excursion
       (cl-loop for link in (eg-entry-offsets eg--current-entry)
-               do (make-text-button
-                   (point-at-bol)
-                   (point-at-eol)
-                   'action `(lambda (_) (eg--view-entry ,link))
-                   'face 'eg-viewer-text-link-face
-                   'help-echo "View this entry"
-                   'follow-link t)
+               do (when (eg-valid-pointer-p link)
+                    (make-text-button
+                     (point-at-bol)
+                     (point-at-eol)
+                     'action `(lambda (_) (eg--view-entry ,link))
+                     'face 'eg-viewer-text-link-face
+                     'help-echo "View this entry"
+                     'follow-link t))
                (forward-line)))))
 
 (defun eg-view-current-entry ()
