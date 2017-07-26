@@ -494,7 +494,10 @@ ensures that it is closed again after BODY has been evaluated."
   :group 'eg)
 
 (defface eg-viewer-nav-button-face
-  '((t :inherit custom-button))
+  '((((type x w32 ns)
+      (class color))
+     :box (:line-width 2 :style released-button)
+     :background "lightgrey" :foreground "black"))
   "Face for top navigation buttons."
   :group 'eg)
 
