@@ -263,16 +263,17 @@ Any trailing NUL characters are removed."
   "Read the header of GUIDE."
   ;; Read the magic "number".
   (setf (eg-guide-magic guide) (eg-read guide 2))
-  ;; Skip 4 bytes (I'm not sure what they are for).
-  (eg-skip guide 4)
-  ;; Get the count of menus.
-  (setf (eg-guide-menu-count guide) (eg-read-word guide nil))
-  ;; Get the title of the guide.
-  (setf (eg-guide-title guide) (eg-read-string guide eg-title-length nil))
-  ;; Load the credits for the guide.
-  (setf (eg-guide-credits guide)
-        (cl-loop for n from 0 to 4
-                 collect (eg-read-string guide eg-credit-length nil)))
+  (when (eg-guide-good-magic-p guide)
+    ;; Skip 4 bytes (I'm not sure what they are for).
+    (eg-skip guide 4)
+    ;; Get the count of menus.
+    (setf (eg-guide-menu-count guide) (eg-read-word guide nil))
+    ;; Get the title of the guide.
+    (setf (eg-guide-title guide) (eg-read-string guide eg-title-length nil))
+    ;; Load the credits for the guide.
+    (setf (eg-guide-credits guide)
+          (cl-loop for n from 0 to 4
+                   collect (eg-read-string guide eg-credit-length nil))))
   guide)
 
 (defun eg-read-menu (guide)
@@ -458,9 +459,10 @@ New line markers are added at the end of each line."
                     (let ((coding-system-for-read 'binary))
                       (insert-file-contents-literally file))
                     (make-eg-guide :file file :buffer (current-buffer))))))
-      (when (eg-guide-has-menus-p guide)
-        (eg-read-menus guide))
-      (setf (eg-guide-first-entry-pos guide) (eg-guide-pos guide))
+      (when (eg-guide-good-magic-p guide)
+        (when (eg-guide-has-menus-p guide)
+          (eg-read-menus guide))
+        (setf (eg-guide-first-entry-pos guide) (eg-guide-pos guide)))
       guide)))
 
 (defun eg-close (guide)
@@ -984,14 +986,18 @@ The key bindings for `eg-mode' are:
 (defun eg (file)
   "View FILE as a Norton Guide database."
   (interactive "fGuide: ")
-  (let ((buffer (get-buffer-create (format "EG: %s" file))))
-    (switch-to-buffer buffer)
-    (with-current-buffer buffer
-      (eg-mode)
-      (set (make-local-variable 'eg--current-guide)        (eg-open file))
-      (set (make-local-variable 'eg--current-entry)        nil)
-      (set (make-local-variable 'eg--currently-displaying) nil)
-      (eg--view-entry))))
+  (let ((guide (eg-open file)))
+    (if (eg-guide-good-magic-p guide)
+        (let ((buffer (get-buffer-create (format "EG: %s" file))))
+          (switch-to-buffer buffer)
+          (with-current-buffer buffer
+            (eg-mode)
+            (set (make-local-variable 'eg--current-guide)        guide)
+            (set (make-local-variable 'eg--current-entry)        nil)
+            (set (make-local-variable 'eg--currently-displaying) nil)
+            (eg--view-entry)))
+      (eg-close guide)
+      (error "%s isn't a valid Norton Guide file" file))))
 
 (provide 'eg)
 
