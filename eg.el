@@ -767,11 +767,24 @@ show for the link."
   "Add navigation links to the top of the buffer."
   (save-excursion
     (setf (point) (point-min))
-    (eg--insert-nav "[<< Prev]" #'eg-entry-has-previous-p #'eg-entry-previous "Go to the previous entry")
+    (insert-text-button "[ Menu ]"
+                        'action (lambda (_) (eg-view-menu))
+                        'face 'eg-viewer-nav-button-face
+                        'help-echo "View the menu"
+                        'follow-link t)
     (insert " ")
-    (eg--insert-nav "[^^ Up ^^]" #'eg-entry-has-parent-p #'eg-entry-parent "Go to the parent entry")
-    (insert " ")
-    (eg--insert-nav "[Next >>]" #'eg-entry-has-next-p #'eg-entry-next "Go to the next entry")
+    (insert-text-button "[ Credits ]"
+                        'action (lambda (_) (eg-view-credits))
+                        'face 'eg-viewer-nav-button-face
+                        'help-echo "View the guide credits"
+                        'follow-link t)
+    (when eg--current-entry
+      (insert " ")
+      (eg--insert-nav "[<< Prev]" #'eg-entry-has-previous-p #'eg-entry-previous "Go to the previous entry")
+      (insert " ")
+      (eg--insert-nav "[^^ Up ^^]" #'eg-entry-has-parent-p #'eg-entry-parent "Go to the parent entry")
+      (insert " ")
+      (eg--insert-nav "[Next >>]" #'eg-entry-has-next-p #'eg-entry-next "Go to the next entry"))
     (insert "\n\n")))
 
 (defun eg--insert-see-alsos (entry)
@@ -1000,7 +1013,8 @@ The key bindings for `eg-mode' are:
                           'face 'eg-viewer-text-link-face
                           'help-echo (format "View the \"%s\" entry" prompt)
                           'follow-link t)
-                         (insert "\n")))))))
+                         (insert "\n"))))
+          (eg--add-top-nav))))
 
 (defun eg-view-credits ()
   "View the credits for the current guide."
@@ -1012,7 +1026,8 @@ The key bindings for `eg-mode' are:
      (setq eg--currently-displaying :eg-credits)
      (save-excursion
        (cl-loop for line in (eg-guide-credits eg--current-guide)
-                do (insert (eg--undosify-string line) "\n"))))))
+                do (insert (eg--undosify-string line) "\n")))
+          (eg--add-top-nav))))
 
 (defun eg-quit ()
   "Quit the EG buffer."
