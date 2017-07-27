@@ -832,11 +832,9 @@ This function has the destructive side-effect of removing the next instance of T
 (defun eg--decorate-buffer ()
   "Parse tokens, etc, to make the buffer more readable.
 
-At the moment this code does very little. Other than the
-C (character) token, it just strips tokens from the text. At some
-point in the near future it would make sense to have this code
-actually decorate the buffer with bold, underline, reverse text,
-etc."
+At the moment this code handles the easier options but, for now,
+doesn't attempt to handle the ^A (colour attribute) token. This
+might change in the future."
   (save-excursion
     (setf (point) (point-min))
     (while (search-forward "^" nil t)
