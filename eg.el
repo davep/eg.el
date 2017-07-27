@@ -516,6 +516,11 @@ ensures that it is closed again after BODY has been evaluated."
   "Face of underlined text."
   :group 'eg)
 
+(defface eg-viewer-reverse-text-face
+  '((t :slant italic))
+  "Face of reversed text."
+  :group 'eg)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Guide viewer "internals".
 
@@ -849,7 +854,8 @@ etc."
               ((string= token "n")      ; Normal.
                (delete-char 1))
               ((string= token "r")      ; Reverse.
-               (delete-char 1))
+               (delete-char 1)
+               (eg--decorate-until "u" 'eg-viewer-reverse-text-face))
               ((string= token "u")      ; Underline.
                (delete-char 1)
                (eg--decorate-until "u" 'eg-viewer-underline-text-face))
