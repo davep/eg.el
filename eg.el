@@ -506,6 +506,11 @@ ensures that it is closed again after BODY has been evaluated."
   "Face for see-also links."
   :group 'eg)
 
+(defface eg-viewer-bold-text-face
+  '((t :weight bold))
+  "Face of bold text."
+  :group 'eg)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Guide viewer "internals".
 
@@ -797,6 +802,23 @@ show for the link."
       (when (eg-entry-long-p eg--current-entry)
         (eg--insert-see-alsos eg--current-entry)))))
 
+(defun eg--decorate-until (token face)
+  "Decorate the current line until next TOKEN or end of line.
+
+Use FACE to decorate what's found.
+
+This function has the destructive side-effect of removing the next instance of TOKEN."
+  (let ((start (point)))
+    (save-excursion
+      (save-restriction
+        (narrow-to-region start (line-end-position))
+        (let ((end (or (search-forward-regexp (format "\\(\\^[%s%sNn]\\)" (upcase token) (downcase token)) nil t)
+                       (point-max))))
+          (setf (buffer-substring start end)
+                (propertize (buffer-substring start end) 'font-lock-face face))
+          (when (and (match-string 1) (string= (downcase (match-string 1)) (concat "^" (downcase token))))
+            (replace-match "")))))))
+
 (defun eg--decorate-buffer ()
   "Parse tokens, etc, to make the buffer more readable.
 
@@ -813,7 +835,8 @@ etc."
         (cond ((string= token "a")      ; Colour attribute.
                (delete-char 3))
               ((string= token "b")      ; Bold.
-               (delete-char 1))
+               (delete-char 1)
+               (eg--decorate-until "b" 'eg-viewer-bold-text-face))
               ((string= token "c")      ; Character.
                (let ((char (buffer-substring-no-properties (1+ (point)) (+ (point) 3))))
                  (delete-char 3)
