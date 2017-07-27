@@ -511,6 +511,11 @@ ensures that it is closed again after BODY has been evaluated."
   "Face of bold text."
   :group 'eg)
 
+(defface eg-viewer-underline-text-face
+  '((t :underline t))
+  "Face of underlined text."
+  :group 'eg)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Guide viewer "internals".
 
@@ -846,7 +851,8 @@ etc."
               ((string= token "r")      ; Reverse.
                (delete-char 1))
               ((string= token "u")      ; Underline.
-               (delete-char 1))
+               (delete-char 1)
+               (eg--decorate-until "u" 'eg-viewer-underline-text-face))
               ((string= token "^")      ; ^ character.
                ;; GNDN
                ))))))
