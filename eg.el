@@ -809,21 +809,21 @@ etc."
     (while (search-forward "^" nil t)
       (let ((token (downcase (buffer-substring-no-properties (point) (1+ (point))))))
         (delete-char -1)
-        (cond ((string= token "a")
+        (cond ((string= token "a")      ; Colour attribute.
                (delete-char 3))
-              ((string= token "b")
+              ((string= token "b")      ; Bold.
                (delete-char 1))
-              ((string= token "c")
+              ((string= token "c")      ; Character.
                (let ((char (buffer-substring-no-properties (1+ (point)) (+ (point) 3))))
                  (delete-char 3)
                  (insert (eg--undosify-char (string-to-number char 16)))))
-              ((string= token "n")
+              ((string= token "n")      ; Normal.
                (delete-char 1))
-              ((string= token "r")
+              ((string= token "r")      ; Reverse.
                (delete-char 1))
-              ((string= token "u")
+              ((string= token "u")      ; Underline.
                (delete-char 1))
-              ((string= token "^")
+              ((string= token "^")      ; ^ character.
                ;; GNDN
                ))))))
 
