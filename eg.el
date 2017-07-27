@@ -502,7 +502,9 @@ ensures that it is closed again after BODY has been evaluated."
   :group 'eg)
 
 (defface eg-viewer-see-also-face
-  '((t :inherit widget-button))
+  '((t :inherit widget-button
+       :underline t
+       :weight bold))
   "Face for see-also links."
   :group 'eg)
 
