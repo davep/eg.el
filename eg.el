@@ -745,20 +745,6 @@ ensures that it is closed again after BODY has been evaluated."
   (apply #'concat
          (cl-loop for c across s collect (gethash c eg--undosify-map (string c)))))
 
-(defun eg--view-entry (&optional offset)
-  "View the entry at OFFSET."
-  (when offset
-    (eg-goto eg--current-guide offset))
-  (setq eg--current-entry (eg-load-entry eg--current-guide))
-  (setq eg--currently-displaying :eg-entry)
-  (let ((buffer-read-only nil))
-    (setf (buffer-string) "")
-    (eg--insert-entry-text)
-    (eg--linkify-entry-text)
-    (eg--decorate-buffer)
-    (eg--add-top-nav)
-    (eg--add-bottom-nav)))
-
 (defun eg--insert-nav (button test pos help)
   "Insert a navigation button.
 
@@ -776,6 +762,17 @@ show for the link."
                             'help-echo help
                             'follow-link t)
       (insert button))))
+
+(defun eg--add-top-nav ()
+  "Add navigation links to the top of the buffer."
+  (save-excursion
+    (setf (point) (point-min))
+    (eg--insert-nav "[<< Prev]" #'eg-entry-has-previous-p #'eg-entry-previous "Go to the previous entry")
+    (insert " ")
+    (eg--insert-nav "[^^ Up ^^]" #'eg-entry-has-parent-p #'eg-entry-parent "Go to the parent entry")
+    (insert " ")
+    (eg--insert-nav "[Next >>]" #'eg-entry-has-next-p #'eg-entry-next "Go to the next entry")
+    (insert "\n\n")))
 
 (defun eg--insert-see-alsos (entry)
   "Insert any see-also links for ENTRY."
@@ -795,17 +792,6 @@ show for the link."
                                  'follow-link t)
                (insert (if (cdr more) "," "") " ")))))
 
-(defun eg--add-top-nav ()
-  "Add navigation links to the top of the buffer."
-  (save-excursion
-    (setf (point) (point-min))
-    (eg--insert-nav "[<< Prev]" #'eg-entry-has-previous-p #'eg-entry-previous "Go to the previous entry")
-    (insert " ")
-    (eg--insert-nav "[^^ Up ^^]" #'eg-entry-has-parent-p #'eg-entry-parent "Go to the parent entry")
-    (insert " ")
-    (eg--insert-nav "[Next >>]" #'eg-entry-has-next-p #'eg-entry-next "Go to the next entry")
-    (insert "\n\n")))
-
 (defun eg--add-bottom-nav ()
   "Add navigation links to the bottom of the buffer."
   (when eg--current-entry
@@ -813,6 +799,20 @@ show for the link."
       (setf (point) (point-max))
       (when (eg-entry-long-p eg--current-entry)
         (eg--insert-see-alsos eg--current-entry)))))
+
+(defun eg--view-entry (&optional offset)
+  "View the entry at OFFSET."
+  (when offset
+    (eg-goto eg--current-guide offset))
+  (setq eg--current-entry (eg-load-entry eg--current-guide))
+  (setq eg--currently-displaying :eg-entry)
+  (let ((buffer-read-only nil))
+    (setf (buffer-string) "")
+    (eg--insert-entry-text)
+    (eg--linkify-entry-text)
+    (eg--decorate-buffer)
+    (eg--add-top-nav)
+    (eg--add-bottom-nav)))
 
 (defun eg--decorate-until (token face)
   "Decorate the current line until next TOKEN or end of line.
