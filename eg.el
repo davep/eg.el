@@ -16,9 +16,6 @@
 ;; eg.el provides code for reading the content of help databases built with
 ;; Norton Guide and Expert Help. It also provides commands for viewing and
 ;; navigating the content of Norton Guide files.
-;;
-;; eg.el is currently a work in progress. Expect it to not work, or work
-;; different, or something.
 
 ;;; Code:
 
