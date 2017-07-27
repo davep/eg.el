@@ -855,7 +855,7 @@ might change in the future."
                (delete-char 1))
               ((string= token "r")      ; Reverse.
                (delete-char 1)
-               (eg--decorate-until "u" 'eg-viewer-reverse-text-face))
+               (eg--decorate-until "r" 'eg-viewer-reverse-text-face))
               ((string= token "u")      ; Underline.
                (delete-char 1)
                (eg--decorate-until "u" 'eg-viewer-underline-text-face))
