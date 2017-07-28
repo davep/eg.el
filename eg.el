@@ -976,14 +976,15 @@ might change in the future."
      nil
      (easy-menu-create-menu
       "See also"
-      (if (eg-entry-has-see-also eg--current-entry)
+      (if (and (eq eg--currently-displaying :eg-entry) eg--current-entry (eg-entry-has-see-also eg--current-entry))
           (cl-loop for see in (eg-see-also-prompts (eg-entry-see-also eg--current-entry))
                    and see-link in (eg-see-also-offsets (eg-entry-see-also eg--current-entry))
                    collect
                    (vector see
                            `(lambda ()
                               (interactive)
-                              (eg--view-entry ,see-link)))))))))
+                              (eg--view-entry ,see-link))))
+        (list ["Nothing" :active nil]))))))
 
 (add-hook 'menu-bar-update-hook #'eg--refresh-guide-menu)
 (add-hook 'menu-bar-update-hook #'eg--refresh-see-also-menu)
