@@ -532,41 +532,6 @@ ensures that it is closed again after BODY has been evaluated."
 (defvar eg--currently-displaying nil
   "Informs the display code what it is we're displaying.")
 
-(defun eg--entry-menu-path (entry)
-  "Describe the menu path for ENTRY."
-  (if (eg-entry-has-parent-menu-p entry)
-      (concat
-       (eg-menu-title
-        (nth (eg-entry-parent-menu entry)
-             (eg-guide-menus eg--current-guide)))
-       " >> "
-       (nth (eg-entry-parent-prompt entry)
-            (eg-menu-prompts
-             (nth (eg-entry-parent-menu entry)
-                  (eg-guide-menus eg--current-guide)))))
-    ""))
-
-(defun eg--header-line ()
-  "Return the header line format for an `eg-mode' buffer."
-  '(:eval
-    (concat
-     " EG | "
-     (file-name-nondirectory (eg-guide-file eg--current-guide))
-     " | "
-     (eg--undosify-string (eg-guide-title eg--current-guide))
-     " | "
-     (cl-case eg--currently-displaying
-       (:eg-entry
-        (if eg--current-entry
-            (concat
-             (eg-entry-type-description eg--current-entry)
-             " | "
-             (eg--entry-menu-path eg--current-entry))))
-       (:eg-menu
-        "Menu")
-       (:eg-credits
-        "Credits")))))
-
 (defvar eg--undosify-map nil
   "Hash table of text translations.")
 
@@ -743,6 +708,41 @@ ensures that it is closed again after BODY has been evaluated."
   "Try and turn S into something that will look pretty."
   (apply #'concat
          (cl-loop for c across s collect (gethash c eg--undosify-map (string c)))))
+
+(defun eg--entry-menu-path (entry)
+  "Describe the menu path for ENTRY."
+  (if (eg-entry-has-parent-menu-p entry)
+      (concat
+       (eg-menu-title
+        (nth (eg-entry-parent-menu entry)
+             (eg-guide-menus eg--current-guide)))
+       " >> "
+       (nth (eg-entry-parent-prompt entry)
+            (eg-menu-prompts
+             (nth (eg-entry-parent-menu entry)
+                  (eg-guide-menus eg--current-guide)))))
+    ""))
+
+(defun eg--header-line ()
+  "Return the header line format for an `eg-mode' buffer."
+  '(:eval
+    (concat
+     " EG | "
+     (file-name-nondirectory (eg-guide-file eg--current-guide))
+     " | "
+     (eg--undosify-string (eg-guide-title eg--current-guide))
+     " | "
+     (cl-case eg--currently-displaying
+       (:eg-entry
+        (if eg--current-entry
+            (concat
+             (eg-entry-type-description eg--current-entry)
+             " | "
+             (eg--entry-menu-path eg--current-entry))))
+       (:eg-menu
+        "Menu")
+       (:eg-credits
+        "Credits")))))
 
 (defun eg--insert-nav (button test pos help)
   "Insert a navigation button.
