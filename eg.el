@@ -939,7 +939,6 @@ might change in the future."
   '("EG"
     ["Credits" eg-view-credits t]
     ["Menu"    eg-view-menu    t]
-
     "--"
     ["Previous entry" eg-goto-prev-entry-maybe   (and eg--current-entry (eg-entry-has-previous-p eg--current-entry))]
     ["Parent entry"   eg-goto-parent-entry-maybe (and eg--current-entry (eg-entry-has-parent-p eg--current-entry))]
