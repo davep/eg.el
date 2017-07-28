@@ -939,12 +939,34 @@ might change in the future."
   '("EG"
     ["Credits" eg-view-credits t]
     ["Menu"    eg-view-menu    t]
+
     "--"
     ["Previous entry" eg-goto-prev-entry-maybe   (and eg--current-entry (eg-entry-has-previous-p eg--current-entry))]
     ["Parent entry"   eg-goto-parent-entry-maybe (and eg--current-entry (eg-entry-has-parent-p eg--current-entry))]
     ["Next entry"     eg-goto-next-entry-maybe   (and eg--current-entry (eg-entry-has-next-p eg--current-entry))]
     "--"
     ["Quit" eg-quit t]))
+
+(defun eg--refresh-guide-menu ()
+  "Refresh the guide menu in the EG menu."
+  (when eg--current-guide
+    (easy-menu-add-item
+     eg-mode-menu
+     (list)
+     (easy-menu-create-menu "Menu"
+                            (cl-loop for menu in (eg-guide-menus eg--current-guide)
+                                     collect
+                                     (cons
+                                      (eg-menu-title menu)
+                                      (cl-loop for prompt in (eg-menu-prompts menu)
+                                               and link   in (eg-menu-offsets menu)
+                                               collect
+                                               (vector prompt
+                                                       `(lambda ()
+                                                          (interactive)
+                                                          (eg--view-entry ,link))))))))))
+
+(add-hook 'menu-bar-update-hook #'eg--refresh-guide-menu)
 
 (put 'eg-mode 'mode-class 'special)
 
