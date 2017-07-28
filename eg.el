@@ -944,10 +944,7 @@ might change in the future."
     ["Parent entry"   eg-goto-parent-entry-maybe (and eg--current-entry (eg-entry-has-parent-p eg--current-entry))]
     ["Next entry"     eg-goto-next-entry-maybe   (and eg--current-entry (eg-entry-has-next-p eg--current-entry))]
     "--"
-    ["See also"
-     (lambda () (interactive))
-     :visible (and eg--current-guide eg--current-entry (eg-entry-has-see-also eg--current-entry))
-     :active t]
+    ("See also" :active nil)
     "--"
     ["Quit" eg-quit t]))
 
