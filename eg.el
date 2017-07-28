@@ -944,6 +944,11 @@ might change in the future."
     ["Parent entry"   eg-goto-parent-entry-maybe (and eg--current-entry (eg-entry-has-parent-p eg--current-entry))]
     ["Next entry"     eg-goto-next-entry-maybe   (and eg--current-entry (eg-entry-has-next-p eg--current-entry))]
     "--"
+    ["See also"
+     (lambda () (interactive))
+     :visible (and eg--current-guide eg--current-entry (eg-entry-has-see-also eg--current-entry))
+     :active t]
+    "--"
     ["Quit" eg-quit t]))
 
 (defun eg--refresh-guide-menu ()
@@ -965,7 +970,24 @@ might change in the future."
                                                           (interactive)
                                                           (eg--view-entry ,link))))))))))
 
+(defun eg--refresh-see-also-menu ()
+  "Refresh the see-also item in the EG menu."
+  (when (and eg--current-guide eg--current-entry)
+    (easy-menu-add-item
+     eg-mode-menu
+     (list)
+     (easy-menu-create-menu "See also"
+                            (if (eg-entry-has-see-also eg--current-entry)
+                                (cl-loop for see in (eg-see-also-prompts (eg-entry-see-also eg--current-entry))
+                                         and see-link in (eg-see-also-offsets (eg-entry-see-also eg--current-entry))
+                                         collect
+                                         (vector see
+                                                 `(lambda ()
+                                                    (interactive)
+                                                    (eg--view-entry ,see-link)))))))))
+
 (add-hook 'menu-bar-update-hook #'eg--refresh-guide-menu)
+(add-hook 'menu-bar-update-hook #'eg--refresh-see-also-menu)
 
 (put 'eg-mode 'mode-class 'special)
 
