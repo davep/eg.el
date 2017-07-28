@@ -937,8 +937,8 @@ might change in the future."
 (easy-menu-define
   eg-mode-menu eg-mode-map "Expert Guide menu"
   '("EG"
-    ["Credits" eg-view-credits t]
-    ["Menu"    eg-view-menu    t]
+    ["Credits" eg-view-credits]
+    ["Menu"    eg-view-menu]
     "--"
     ["Previous entry" eg-goto-prev-entry-maybe   (and eg--current-entry (eg-entry-has-previous-p eg--current-entry))]
     ["Parent entry"   eg-goto-parent-entry-maybe (and eg--current-entry (eg-entry-has-parent-p eg--current-entry))]
@@ -946,7 +946,7 @@ might change in the future."
     "--"
     ("See also" :active nil)
     "--"
-    ["Quit" eg-quit t]))
+    ["Quit" eg-quit]))
 
 (defun eg--refresh-guide-menu ()
   "Refresh the guide menu in the EG menu."
