@@ -953,35 +953,37 @@ might change in the future."
   (when eg--current-guide
     (easy-menu-add-item
      eg-mode-menu
-     (list)
-     (easy-menu-create-menu "Menu"
-                            (cl-loop for menu in (eg-guide-menus eg--current-guide)
-                                     collect
-                                     (cons
-                                      (eg-menu-title menu)
-                                      (cl-loop for prompt in (eg-menu-prompts menu)
-                                               and link   in (eg-menu-offsets menu)
-                                               collect
-                                               (vector prompt
-                                                       `(lambda ()
-                                                          (interactive)
-                                                          (eg--view-entry ,link))))))))))
+     nil
+     (easy-menu-create-menu
+      "Menu"
+      (cl-loop for menu in (eg-guide-menus eg--current-guide)
+               collect
+               (cons
+                (eg-menu-title menu)
+                (cl-loop for prompt in (eg-menu-prompts menu)
+                         and link   in (eg-menu-offsets menu)
+                         collect
+                         (vector prompt
+                                 `(lambda ()
+                                    (interactive)
+                                    (eg--view-entry ,link))))))))))
 
 (defun eg--refresh-see-also-menu ()
   "Refresh the see-also item in the EG menu."
   (when (and eg--current-guide eg--current-entry)
     (easy-menu-add-item
      eg-mode-menu
-     (list)
-     (easy-menu-create-menu "See also"
-                            (if (eg-entry-has-see-also eg--current-entry)
-                                (cl-loop for see in (eg-see-also-prompts (eg-entry-see-also eg--current-entry))
-                                         and see-link in (eg-see-also-offsets (eg-entry-see-also eg--current-entry))
-                                         collect
-                                         (vector see
-                                                 `(lambda ()
-                                                    (interactive)
-                                                    (eg--view-entry ,see-link)))))))))
+     nil
+     (easy-menu-create-menu
+      "See also"
+      (if (eg-entry-has-see-also eg--current-entry)
+          (cl-loop for see in (eg-see-also-prompts (eg-entry-see-also eg--current-entry))
+                   and see-link in (eg-see-also-offsets (eg-entry-see-also eg--current-entry))
+                   collect
+                   (vector see
+                           `(lambda ()
+                              (interactive)
+                              (eg--view-entry ,see-link)))))))))
 
 (add-hook 'menu-bar-update-hook #'eg--refresh-guide-menu)
 (add-hook 'menu-bar-update-hook #'eg--refresh-see-also-menu)
