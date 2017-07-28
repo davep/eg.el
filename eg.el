@@ -550,8 +550,10 @@ ensures that it is closed again after BODY has been evaluated."
   "Return the header line format for an `eg-mode' buffer."
   '(:eval
     (concat
-     "Expert Guide | "
+     " EG | "
      (file-name-nondirectory (eg-guide-file eg--current-guide))
+     " | "
+     (eg--undosify-string (eg-guide-title eg--current-guide))
      " | "
      (cl-case eg--currently-displaying
        (:eg-entry
