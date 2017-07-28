@@ -26,6 +26,7 @@
 ;; General Norton Guide reading code.
 
 (require 'cl-lib)
+(require 'easymenu)
 
 (defconst eg-magic-ng "NG"
   "Magic marker for a guide built with Norton Guide.")
@@ -932,6 +933,18 @@ might change in the future."
     (define-key map "q"         #'eg-quit)
     (define-key map "?"         #'describe-mode)
     (setq eg-mode-map map)))
+
+(easy-menu-define
+  eg-mode-menu eg-mode-map "Expert Guide menu"
+  '("EG"
+    ["Credits" eg-view-credits t]
+    ["Menu"    eg-view-menu    t]
+    "--"
+    ["Previous entry" eg-goto-prev-entry-maybe   (and eg--current-entry (eg-entry-has-previous-p eg--current-entry))]
+    ["Parent entry"   eg-goto-parent-entry-maybe (and eg--current-entry (eg-entry-has-parent-p eg--current-entry))]
+    ["Next entry"     eg-goto-next-entry-maybe   (and eg--current-entry (eg-entry-has-next-p eg--current-entry))]
+    "--"
+    ["Quit" eg-quit t]))
 
 (put 'eg-mode 'mode-class 'special)
 
