@@ -2,7 +2,7 @@
 ;; Copyright 2017 by Dave Pearson <davep@davep.org>
 
 ;; Author: Dave Pearson <davep@davep.org>
-;; Version: 0.1
+;; Version: 1.0
 ;; Keywords: docs
 ;; URL: https://github.com/davep/eg.el
 ;; Package-Requires: ((cl-lib "0.5") (emacs "24"))
