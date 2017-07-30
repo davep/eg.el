@@ -21,4 +21,4 @@ Here's a little sample of `eg.el` in action in a text terminal:
 
 Here's a little sample of `eg.el` in action in a graphical Emacs:
 
-[![eg.el](https://img.youtube.com/vi/OacyjM_EVFM/0.jpg)](https://www.youtube.com/watch?v=OacyjM_EVFM)
+[![eg.el](https://img.youtube.com/vi/9tjB4ZFXNgE/0.jpg)](https://www.youtube.com/watch?v=9tjB4ZFXNgE)
