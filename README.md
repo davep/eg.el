@@ -17,7 +17,7 @@ are an avid Emacs user.
 
 Here's a little sample of `eg.el` in action in a text terminal:
 
-[![asciicast](https://asciinema.org/a/130158.png)](https://asciinema.org/a/130158)
+[![asciicast](https://asciinema.org/a/gMKjcWyxwuMdTqlAX9ERT4gU0.png)](https://asciinema.org/a/gMKjcWyxwuMdTqlAX9ERT4gU0)
 
 Here's a little sample of `eg.el` in action in a graphical Emacs:
 
