@@ -293,7 +293,7 @@ Any trailing NUL characters are removed."
     ;; Skip some unknown values.
     (eg-skip guide (* (1+ (eg-menu-prompt-count menu)) 8))
     ;; Get the menu's title.
-    (setf (eg-menu-title menu) (eg-read-string-z guide eg-prompt-length))
+    (setf (eg-menu-title menu) (eg-clean-string (eg-read-string-z guide eg-prompt-length)))
     ;; Now load up the prompts.
     (setf (eg-menu-prompts menu)
           (cl-loop for n from 1 to (eg-menu-prompt-count menu)
