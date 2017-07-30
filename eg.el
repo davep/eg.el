@@ -800,12 +800,15 @@ show for the link."
       (cl-loop for see in (eg-see-also-prompts (eg-entry-see-also entry))
                and see-link in (eg-see-also-offsets (eg-entry-see-also entry))
                and more on (eg-see-also-offsets (eg-entry-see-also entry))
-               do (insert-button see
-                                 'action `(lambda (_)
-                                            (eg--view-entry ,see-link))
-                                 'face 'eg-viewer-see-also-face
-                                 'help-echo (format "See also \"%s\"" see)
-                                 'follow-link t)
+               do
+               (when (> (+ (current-column) (length see)) fill-column)
+                 (insert "\n"))
+               (insert-button see
+                              'action `(lambda (_)
+                                         (eg--view-entry ,see-link))
+                              'face 'eg-viewer-see-also-face
+                              'help-echo (format "See also \"%s\"" see)
+                              'follow-link t)
                (insert (if (cdr more) "," "") " ")))))
 
 (defun eg--add-bottom-nav ()
