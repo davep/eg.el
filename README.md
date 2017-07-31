@@ -1,3 +1,6 @@
+[![MELPA Stable](https://stable.melpa.org/packages/eg-badge.svg)](https://stable.melpa.org/#/eg)
+[![MELPA](https://melpa.org/packages/eg-badge.svg)](https://melpa.org/#/eg)
+
 # eg.el
 
 A Norton Guide reader for GNU Emacs.
