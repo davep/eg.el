@@ -836,8 +836,8 @@ show for the link."
   "View the entry at OFFSET."
   (when offset
     (eg-goto eg--current-guide offset))
-  (setq eg--current-entry (eg-load-entry eg--current-guide))
-  (setq eg--currently-displaying :eg-entry)
+  (setq eg--current-entry        (eg-load-entry eg--current-guide)
+        eg--currently-displaying :eg-entry)
   (let ((buffer-read-only nil))
     (setf (buffer-string) "")
     (eg--insert-entry-text)
@@ -1017,10 +1017,10 @@ The key bindings for `eg-mode' are:
 \\{eg-mode-map}"
   (kill-all-local-variables)
   (use-local-map eg-mode-map)
-  (setq major-mode       'eg-mode
-        mode-name        "Expert Guide"
-        buffer-read-only t
-        truncate-lines   t
+  (setq major-mode         'eg-mode
+        mode-name          "Expert Guide"
+        buffer-read-only   t
+        truncate-lines     t
         header-line-format (eg--header-line))
   (buffer-disable-undo))
 
@@ -1073,8 +1073,8 @@ The key bindings for `eg-mode' are:
   (eg--with-valid-buffer
    (let ((buffer-read-only nil))
      (setf (buffer-string) "")
-     (setq eg--current-entry nil)
-     (setq eg--currently-displaying :eg-menu)
+     (setq eg--current-entry        nil
+           eg--currently-displaying :eg-menu)
      (save-excursion
        (cl-loop for menu in (eg-guide-menus eg--current-guide)
                 do
@@ -1098,8 +1098,8 @@ The key bindings for `eg-mode' are:
   (eg--with-valid-buffer
    (let ((buffer-read-only nil))
      (setf (buffer-string) "")
-     (setq eg--current-entry nil)
-     (setq eg--currently-displaying :eg-credits)
+     (setq eg--current-entry        nil
+           eg--currently-displaying :eg-credits)
      (save-excursion
        (cl-loop for line in (eg-guide-credits eg--current-guide)
                 do (insert (eg--undosify-string line) "\n")))
