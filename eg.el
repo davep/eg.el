@@ -1128,10 +1128,10 @@ The key bindings for `eg-mode' are:
           (switch-to-buffer buffer)
           (with-current-buffer buffer
             (eg-mode)
-            (setq eg--current-guide        guide)
-            (setq eg--current-entry        nil)
-            (setq eg--currently-displaying nil)
-            (setq eg--viewing-source       nil)
+            (setq eg--current-guide        guide
+                  eg--current-entry        nil
+                  eg--currently-displaying nil
+                  eg--viewing-source       nil)
             (eg--view-entry)))
       (eg-close guide)
       (error "%s isn't a valid Norton Guide file" file))))
