@@ -753,6 +753,7 @@ ensures that it is closed again after BODY has been evaluated."
         (if eg--current-entry
             (concat
              (eg-entry-type-description eg--current-entry)
+             (if eg--viewing-source " (Source)" "")
              " | "
              (eg--entry-menu-path eg--current-entry))))
        (:eg-menu
