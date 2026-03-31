@@ -5,7 +5,7 @@
 ;; Version: 1.1
 ;; Keywords: docs
 ;; URL: https://github.com/davep/eg.el
-;; Package-Requires: ((cl-lib "0.5") (emacs "24.3"))
+;; Package-Requires: ((emacs "24.3"))
 
 ;; This program is free software: you can redistribute it and/or modify it
 ;; under the terms of the GNU General Public License as published by the
@@ -782,7 +782,7 @@ show for the link."
 (defun eg--add-top-nav ()
   "Add navigation links to the top of the buffer."
   (save-excursion
-    (setf (point) (point-min))
+    (goto-char (point-min))
     (insert-text-button "[ Menu ]"
                         'action (lambda (_) (eg-view-menu))
                         'face 'eg-viewer-nav-button-face
@@ -807,7 +807,7 @@ show for the link."
   "Insert any see-also links for ENTRY."
   (when (eg-entry-has-see-also entry)
     (save-excursion
-      (setf (point) (point-max))
+      (goto-char (point-max))
       (insert (make-string fill-column ?-) "\n")
       (insert "See also: ")
       (cl-loop for see in (eg-see-also-prompts (eg-entry-see-also entry))
@@ -828,7 +828,7 @@ show for the link."
   "Add navigation links to the bottom of the buffer."
   (when eg--current-entry
     (save-excursion
-      (setf (point) (point-max))
+      (goto-char (point-max))
       (when (eg-entry-long-p eg--current-entry)
         (eg--insert-see-alsos eg--current-entry)))))
 
@@ -871,7 +871,7 @@ At the moment this code handles the easier options but, for now,
 doesn't attempt to handle the ^A (colour attribute) token. This
 might change in the future."
   (save-excursion
-    (setf (point) (point-min))
+    (goto-char (point-min))
     (while (search-forward "^" nil t)
       (let ((token (downcase (buffer-substring-no-properties (point) (1+ (point))))))
         (delete-char -1)
@@ -1027,7 +1027,7 @@ The key bindings for `eg-mode' are:
   (interactive)
   (eg--with-valid-buffer
    (unless (next-button (point))
-     (setf (point) (point-min)))
+     (goto-char (point-min)))
    (forward-button 1)))
 
 (defun eg-jump-prev-link ()
@@ -1035,7 +1035,7 @@ The key bindings for `eg-mode' are:
   (interactive)
   (eg--with-valid-buffer
    (unless (previous-button (point))
-     (setf (point) (point-max)))
+     (goto-char (point-max)))
    (backward-button 1)))
 
 (defun eg-goto-parent-entry-maybe ()
