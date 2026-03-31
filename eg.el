@@ -860,8 +860,7 @@ instance of TOKEN."
         (narrow-to-region start (line-end-position))
         (let ((end (or (search-forward-regexp (format "\\(\\^[%s%sNn]\\)" (upcase token) (downcase token)) nil t)
                        (point-max))))
-          (setf (buffer-substring start end)
-                (propertize (buffer-substring start end) 'font-lock-face face))
+          (put-text-property start end 'face face)
           (when (and (match-string 1) (string= (downcase (match-string 1)) (concat "^" (downcase token))))
             (replace-match "")))))))
 
