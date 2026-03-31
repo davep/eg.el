@@ -253,7 +253,7 @@ Any trailing NUL characters are removed."
                                 s))))
 
 (cl-defun eg-read-string-z (guide len &optional (decrypt t))
-  "Read string up to LEN characters, stopping if a nul is encountered."
+  "Read string up to LEN characters from GUIDE, stopping if a nul is encountered."
   (let ((s (eg-save-excursion guide
              (eg-read-string guide len decrypt))))
     (eg-skip guide (1+ (length s)))
@@ -495,7 +495,7 @@ ensures that it is closed again after BODY has been evaluated."
 ;; Customizable parts of the Norton Guide reader.
 
 (defgroup eg nil
-  "Expert Help: The Emacs Norton Guide viewer"
+  "Expert Help: The Emacs Norton Guide viewer."
   :group 'docs)
 
 (defface eg-viewer-text-link-face
@@ -951,7 +951,7 @@ might change in the future."
     (setq eg-mode-map map)))
 
 (easy-menu-define
-  eg-mode-menu eg-mode-map "Expert Guide menu"
+  eg-mode-menu eg-mode-map "Expert Guide menu."
   '("EG"
     ["Credits" eg-view-credits]
     ["Menu"    eg-view-menu]
