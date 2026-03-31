@@ -852,7 +852,8 @@ show for the link."
 
 Use FACE to decorate what's found.
 
-This function has the destructive side-effect of removing the next instance of TOKEN."
+This function has the destructive side-effect of removing the next
+instance of TOKEN."
   (let ((start (point)))
     (save-excursion
       (save-restriction
