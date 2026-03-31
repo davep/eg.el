@@ -839,7 +839,7 @@ show for the link."
   (setq eg--current-entry        (eg-load-entry eg--current-guide)
         eg--currently-displaying :eg-entry)
   (let ((buffer-read-only nil))
-    (setf (buffer-string) "")
+    (erase-buffer)
     (eg--insert-entry-text)
     (eg--linkify-entry-text)
     (unless eg--viewing-source
@@ -1071,7 +1071,7 @@ The key bindings for `eg-mode' are:
   (interactive)
   (eg--with-valid-buffer
    (let ((buffer-read-only nil))
-     (setf (buffer-string) "")
+     (erase-buffer)
      (setq eg--current-entry        nil
            eg--currently-displaying :eg-menu)
      (save-excursion
@@ -1096,7 +1096,7 @@ The key bindings for `eg-mode' are:
   (interactive)
   (eg--with-valid-buffer
    (let ((buffer-read-only nil))
-     (setf (buffer-string) "")
+     (erase-buffer)
      (setq eg--current-entry        nil
            eg--currently-displaying :eg-credits)
      (save-excursion
