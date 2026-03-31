@@ -908,8 +908,8 @@ might change in the future."
       (cl-loop for link in (eg-entry-offsets eg--current-entry)
                do (when (eg-valid-pointer-p link)
                     (make-text-button
-                     (point-at-bol)
-                     (point-at-eol)
+                     (pos-bol)
+                     (pos-eol)
                      'action `(lambda (_) (eg--view-entry ,link))
                      'face 'eg-viewer-text-link-face
                      'help-echo "View this entry"
