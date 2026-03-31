@@ -191,7 +191,7 @@ This has the side-effect of moving `eg-guide-pos'"
   (let ((word (eg-read guide 2)))
     (let ((lo (eg-decrypt (aref word 0) decrypt))
           (hi (eg-decrypt (aref word 1) decrypt)))
-      (eg-make-signed-word (+ (lsh hi 8) lo)))))
+      (eg-make-signed-word (+ (ash hi 8) lo)))))
 
 (defun eg-make-signed-long (n)
   "Ensure N is a signed long."
@@ -211,7 +211,7 @@ This has the side-effect of moving `eg-guide-pos'"
           (hilo (eg-decrypt (aref long 2) decrypt))
           (hihi (eg-decrypt (aref long 3) decrypt)))
       (eg-make-signed-long
-       (+ (lsh (+ (lsh hihi 8) hilo) 16) (+ (lsh lohi 8) lolo))))))
+       (+ (ash (+ (ash hihi 8) hilo) 16) (+ (ash lohi 8) lolo))))))
 
 (cl-defun eg-decrypt-string (s)
   "Decrypt string S."
