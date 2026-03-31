@@ -5,7 +5,7 @@
 ;; Version: 1.1
 ;; Keywords: docs
 ;; URL: https://github.com/davep/eg.el
-;; Package-Requires: ((cl-lib "0.5") (emacs "24.3"))
+;; Package-Requires: ((emacs "29.1"))
 
 ;; This program is free software: you can redistribute it and/or modify it
 ;; under the terms of the GNU General Public License as published by the
@@ -191,7 +191,7 @@ This has the side-effect of moving `eg-guide-pos'"
   (let ((word (eg-read guide 2)))
     (let ((lo (eg-decrypt (aref word 0) decrypt))
           (hi (eg-decrypt (aref word 1) decrypt)))
-      (eg-make-signed-word (+ (lsh hi 8) lo)))))
+      (eg-make-signed-word (+ (ash hi 8) lo)))))
 
 (defun eg-make-signed-long (n)
   "Ensure N is a signed long."
@@ -211,7 +211,7 @@ This has the side-effect of moving `eg-guide-pos'"
           (hilo (eg-decrypt (aref long 2) decrypt))
           (hihi (eg-decrypt (aref long 3) decrypt)))
       (eg-make-signed-long
-       (+ (lsh (+ (lsh hihi 8) hilo) 16) (+ (lsh lohi 8) lolo))))))
+       (+ (ash (+ (ash hihi 8) hilo) 16) (+ (ash lohi 8) lolo))))))
 
 (cl-defun eg-decrypt-string (s)
   "Decrypt string S."
@@ -253,7 +253,7 @@ Any trailing NUL characters are removed."
                                 s))))
 
 (cl-defun eg-read-string-z (guide len &optional (decrypt t))
-  "Read string up to LEN characters, stopping if a nul is encountered."
+  "Read string up to LEN characters from GUIDE, stopping if a nul is encountered."
   (let ((s (eg-save-excursion guide
              (eg-read-string guide len decrypt))))
     (eg-skip guide (1+ (length s)))
@@ -495,7 +495,7 @@ ensures that it is closed again after BODY has been evaluated."
 ;; Customizable parts of the Norton Guide reader.
 
 (defgroup eg nil
-  "Expert Help: The Emacs Norton Guide viewer"
+  "Expert Help: The Emacs Norton Guide viewer."
   :group 'docs)
 
 (defface eg-viewer-text-link-face
@@ -782,7 +782,7 @@ show for the link."
 (defun eg--add-top-nav ()
   "Add navigation links to the top of the buffer."
   (save-excursion
-    (setf (point) (point-min))
+    (goto-char (point-min))
     (insert-text-button "[ Menu ]"
                         'action (lambda (_) (eg-view-menu))
                         'face 'eg-viewer-nav-button-face
@@ -807,7 +807,7 @@ show for the link."
   "Insert any see-also links for ENTRY."
   (when (eg-entry-has-see-also entry)
     (save-excursion
-      (setf (point) (point-max))
+      (goto-char (point-max))
       (insert (make-string fill-column ?-) "\n")
       (insert "See also: ")
       (cl-loop for see in (eg-see-also-prompts (eg-entry-see-also entry))
@@ -828,7 +828,7 @@ show for the link."
   "Add navigation links to the bottom of the buffer."
   (when eg--current-entry
     (save-excursion
-      (setf (point) (point-max))
+      (goto-char (point-max))
       (when (eg-entry-long-p eg--current-entry)
         (eg--insert-see-alsos eg--current-entry)))))
 
@@ -839,7 +839,7 @@ show for the link."
   (setq eg--current-entry        (eg-load-entry eg--current-guide)
         eg--currently-displaying :eg-entry)
   (let ((buffer-read-only nil))
-    (setf (buffer-string) "")
+    (erase-buffer)
     (eg--insert-entry-text)
     (eg--linkify-entry-text)
     (unless eg--viewing-source
@@ -852,15 +852,15 @@ show for the link."
 
 Use FACE to decorate what's found.
 
-This function has the destructive side-effect of removing the next instance of TOKEN."
+This function has the destructive side-effect of removing the next
+instance of TOKEN."
   (let ((start (point)))
     (save-excursion
       (save-restriction
         (narrow-to-region start (line-end-position))
         (let ((end (or (search-forward-regexp (format "\\(\\^[%s%sNn]\\)" (upcase token) (downcase token)) nil t)
                        (point-max))))
-          (setf (buffer-substring start end)
-                (propertize (buffer-substring start end) 'font-lock-face face))
+          (put-text-property start end 'face face)
           (when (and (match-string 1) (string= (downcase (match-string 1)) (concat "^" (downcase token))))
             (replace-match "")))))))
 
@@ -871,7 +871,7 @@ At the moment this code handles the easier options but, for now,
 doesn't attempt to handle the ^A (colour attribute) token. This
 might change in the future."
   (save-excursion
-    (setf (point) (point-min))
+    (goto-char (point-min))
     (while (search-forward "^" nil t)
       (let ((token (downcase (buffer-substring-no-properties (point) (1+ (point))))))
         (delete-char -1)
@@ -907,8 +907,8 @@ might change in the future."
       (cl-loop for link in (eg-entry-offsets eg--current-entry)
                do (when (eg-valid-pointer-p link)
                     (make-text-button
-                     (point-at-bol)
-                     (point-at-eol)
+                     (pos-bol)
+                     (pos-eol)
                      'action `(lambda (_) (eg--view-entry ,link))
                      'face 'eg-viewer-text-link-face
                      'help-echo "View this entry"
@@ -951,7 +951,7 @@ might change in the future."
     (setq eg-mode-map map)))
 
 (easy-menu-define
-  eg-mode-menu eg-mode-map "Expert Guide menu"
+  eg-mode-menu eg-mode-map "Expert Guide menu."
   '("EG"
     ["Credits" eg-view-credits]
     ["Menu"    eg-view-menu]
@@ -1027,7 +1027,7 @@ The key bindings for `eg-mode' are:
   (interactive)
   (eg--with-valid-buffer
    (unless (next-button (point))
-     (setf (point) (point-min)))
+     (goto-char (point-min)))
    (forward-button 1)))
 
 (defun eg-jump-prev-link ()
@@ -1035,7 +1035,7 @@ The key bindings for `eg-mode' are:
   (interactive)
   (eg--with-valid-buffer
    (unless (previous-button (point))
-     (setf (point) (point-max)))
+     (goto-char (point-max)))
    (backward-button 1)))
 
 (defun eg-goto-parent-entry-maybe ()
@@ -1070,7 +1070,7 @@ The key bindings for `eg-mode' are:
   (interactive)
   (eg--with-valid-buffer
    (let ((buffer-read-only nil))
-     (setf (buffer-string) "")
+     (erase-buffer)
      (setq eg--current-entry        nil
            eg--currently-displaying :eg-menu)
      (save-excursion
@@ -1095,7 +1095,7 @@ The key bindings for `eg-mode' are:
   (interactive)
   (eg--with-valid-buffer
    (let ((buffer-read-only nil))
-     (setf (buffer-string) "")
+     (erase-buffer)
      (setq eg--current-entry        nil
            eg--currently-displaying :eg-credits)
      (save-excursion
